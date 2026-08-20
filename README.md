@@ -66,21 +66,21 @@ O sistema processa dados contínuos de telemetria fluviométrica (níveis dos ri
 ### BP-01: Visualizar Nível Atual de Rios por Município (13 pts)
 *Pesquisa por município, cards de estações com medidores visuais de nível e cotas limiares.*
 
-![Protótipo BP-01](prototipos/bp01_nivel_rios.jpg)
+![Protótipo BP-01](prototipos-ia-temporarios/bp01_nivel_rios.jpg)
 
 ---
 
 ### BP-02: Consultar Histórico de Chuva Acumulada (8 pts)
 *Seletor de estação meteorológica, intervalo de datas e gráfico de precipitação acumulada.*
 
-![Protótipo BP-02](prototipos/bp02_historico_chuva.jpg)
+![Protótipo BP-02](prototipos-ia-temporarios/bp02_historico_chuva.jpg)
 
 ---
 
 ### BP-03: Visualizar Mapa Interativo de Alertas Ativos (13 pts)
 *Mapa interativo do RS com marcadores por cor de severidade e painel de detalhamento da estação.*
 
-![Protótipo BP-03](prototipos/bp03_mapa_alertas.jpg)
+![Protótipo BP-03](prototipos-ia-temporarios/bp03_mapa_alertas.jpg)
 
 ---
 
