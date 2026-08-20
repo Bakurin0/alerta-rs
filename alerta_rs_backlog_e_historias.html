@@ -1,0 +1,209 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);color:var(--text-primary)}
+.doc{padding:2rem 1rem;max-width:860px;margin:0 auto}
+h1{font-size:22px;font-weight:500;margin-bottom:.25rem}
+h2{font-size:18px;font-weight:500;margin:2rem 0 .75rem;color:var(--text-primary);border-bottom:0.5px solid var(--border);padding-bottom:.4rem}
+h3{font-size:16px;font-weight:500;margin:1.25rem 0 .5rem}
+p{font-size:14px;line-height:1.7;color:var(--text-secondary);margin-bottom:.5rem}
+.badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:4px;font-weight:500}
+.badge-po{background:var(--bg-accent);color:var(--text-accent)}
+.badge-sm{background:var(--bg-success);color:var(--text-success)}
+.badge-dev{background:var(--bg-warning);color:var(--text-warning)}
+.team-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:1.5rem}
+.member{background:var(--surface-1);border:0.5px solid var(--border);border-radius:var(--radius);padding:.6rem .8rem;font-size:13px}
+.member strong{display:block;font-weight:500;margin-bottom:2px}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:1rem}
+th{background:var(--surface-1);padding:.5rem .75rem;text-align:left;font-weight:500;font-size:12px;color:var(--text-secondary);border:0.5px solid var(--border)}
+td{padding:.5rem .75rem;border:0.5px solid var(--border);vertical-align:top;line-height:1.5}
+tr:nth-child(even) td{background:var(--surface-1)}
+.sprint-row td{background:var(--bg-accent)!important;color:var(--text-primary)}
+.pts{font-weight:500;color:var(--text-accent);text-align:center}
+.story-card{background:var(--surface-2);border:0.5px solid var(--border);border-radius:12px;padding:1.25rem;margin-bottom:1.25rem}
+.story-header{display:flex;align-items:center;gap:8px;margin-bottom:.75rem}
+.story-num{background:var(--bg-accent);color:var(--text-accent);font-size:12px;font-weight:500;padding:2px 10px;border-radius:4px}
+.story-title{font-size:15px;font-weight:500}
+.story-desc{font-size:13px;color:var(--text-secondary);margin-bottom:.75rem;line-height:1.6}
+.tasks{font-size:13px}
+.task-row{display:flex;gap:8px;margin-bottom:4px;align-items:flex-start}
+.task-dot{width:6px;height:6px;border-radius:50%;background:var(--border-accent);margin-top:5px;flex-shrink:0}
+.section-label{font-size:11px;font-weight:500;color:var(--text-muted);text-transform:uppercase;letter-spacing:.04em;margin:.75rem 0 .4rem}
+.info-block{background:var(--surface-1);border:0.5px solid var(--border);border-radius:var(--radius);padding:.75rem 1rem;margin-bottom:1rem;font-size:13px;line-height:1.6}
+.info-block strong{color:var(--text-primary)}
+.proto-link{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--text-accent);margin-top:.5rem;cursor:pointer;background:none;border:none;padding:0;text-decoration:underline}
+</style>
+<div class="doc">
+  <h1>AlertaRS – Painel de Monitoramento Hidrológico e Prevenção Climática</h1>
+  <p style="font-size:13px;color:var(--text-muted);margin-bottom:1.5rem">Projeto Integrador IV · UCS · Análise e Desenvolvimento de Sistemas · Etapa 1</p>
+
+  <h2>Identificação do grupo</h2>
+  <div class="team-grid">
+    <div class="member"><strong>Integrante 1</strong><span class="badge badge-po">Product Owner</span></div>
+    <div class="member"><strong>Integrante 2</strong><span class="badge badge-sm">Scrum Master</span></div>
+    <div class="member"><strong>Integrante 3</strong><span class="badge badge-dev">Desenvolvedor</span></div>
+    <div class="member"><strong>Integrante 4</strong><span class="badge badge-dev">Desenvolvedor</span></div>
+    <div class="member"><strong>Integrante 5</strong><span class="badge badge-dev">Desenvolvedor</span></div>
+  </div>
+
+  <h2>Nome e objetivo do projeto</h2>
+  <div class="info-block">
+    <strong>Nome:</strong> AlertaRS<br>
+    <strong>Objetivo:</strong> Desenvolver uma aplicação web voltada ao monitoramento em tempo real e análise histórica das condições hidrológicas e meteorológicas dos municípios e bacias hidrográficas do Rio Grande do Sul. O sistema processa dados de telemetria (níveis de rios e réguas linimétricas) e estações meteorológicas (volume de chuva acumulada), calculando automaticamente a proximidade em relação às cotas de atenção, alerta e inundação, além de prover dashboards comparativos e histórico de alertas da Defesa Civil para suporte à decisão comunitária e preventiva.
+  </div>
+
+  <h2>Fonte de dados</h2>
+  <div class="info-block">
+    <strong>Organização:</strong> Plataforma ClimaRS – Secretaria do Meio Ambiente e Infraestrutura (SEMA) / Defesa Civil do RS / PROCERGS<br>
+    <strong>Acesso:</strong> <a href="https://clima.rs.gov.br" style="color:var(--text-accent)">https://clima.rs.gov.br</a> · Carta de Serviços RS: <a href="https://www.rs.gov.br/carta-de-servicos/servicos?servico=3287" style="color:var(--text-accent)">rs.gov.br/carta-de-servicos</a>
+  </div>
+
+  <h2>Backlog do produto</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Necessidade (funcionalidade)</th>
+        <th style="width:60px;text-align:center">Pontos</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="sprint-row">
+        <td><strong>BP-01</strong></td>
+        <td><strong>Visualizar nível atual de rios e bacias por município</strong> — o usuário seleciona um município e vê os níveis de rios em tempo real, com indicação visual das cotas (atenção, alerta, inundação).</td>
+        <td class="pts">13</td>
+      </tr>
+      <tr class="sprint-row">
+        <td><strong>BP-02</strong></td>
+        <td><strong>Consultar histórico de chuva acumulada por estação meteorológica</strong> — o usuário filtra por estação e período e visualiza o volume de precipitação acumulada em gráfico de séries temporais.</td>
+        <td class="pts">8</td>
+      </tr>
+      <tr class="sprint-row">
+        <td><strong>BP-03</strong></td>
+        <td><strong>Visualizar mapa interativo de alertas ativos</strong> — exibe um mapa do RS com marcadores coloridos por nível de alerta (verde, amarelo, laranja, vermelho) para cada estação/município monitorado.</td>
+        <td class="pts">13</td>
+      </tr>
+      <tr>
+        <td><strong>BP-04</strong></td>
+        <td><strong>Consultar histórico de alertas emitidos pela Defesa Civil</strong> — o usuário filtra por município e período e acessa os registros de eventos de alerta anteriores com data, tipo e nível.</td>
+        <td class="pts">8</td>
+      </tr>
+      <tr>
+        <td><strong>BP-05</strong></td>
+        <td><strong>Comparar municípios por indicadores hidrológicos</strong> — o usuário seleciona até 3 municípios e visualiza um painel comparativo com nível do rio, chuva acumulada e status de alerta lado a lado.</td>
+        <td class="pts">8</td>
+      </tr>
+      <tr>
+        <td><strong>BP-06</strong></td>
+        <td><strong>Exibir dashboard com indicadores consolidados do estado</strong> — visão geral com totais de estações em alerta, municípios críticos, precipitação média e tendência das últimas 24h.</td>
+        <td class="pts">5</td>
+      </tr>
+      <tr>
+        <td><strong>BP-07</strong></td>
+        <td><strong>Filtrar estações por bacia hidrográfica</strong> — o usuário seleciona uma bacia e visualiza apenas as estações pertencentes a ela, com os dados de nível e chuva correspondentes.</td>
+        <td class="pts">5</td>
+      </tr>
+      <tr>
+        <td><strong>BP-08</strong></td>
+        <td><strong>Exportar relatório de dados por município e período</strong> — o usuário gera e baixa um arquivo com os dados de nível e precipitação de um município em um intervalo de datas selecionado.</td>
+        <td class="pts">5</td>
+      </tr>
+    </tbody>
+  </table>
+  <p style="font-size:12px;color:var(--text-muted)">★ Itens destacados compõem o backlog da sprint (total: 34 pontos). Velocidade estimada da equipe: 34 pts/sprint.</p>
+
+  <h2>Backlog da sprint</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Item priorizado</th>
+        <th style="width:60px;text-align:center">Pontos</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>BP-01</strong></td>
+        <td>Visualizar nível atual de rios e bacias por município</td>
+        <td class="pts">13</td>
+      </tr>
+      <tr>
+        <td><strong>BP-02</strong></td>
+        <td>Consultar histórico de chuva acumulada por estação meteorológica</td>
+        <td class="pts">8</td>
+      </tr>
+      <tr>
+        <td><strong>BP-03</strong></td>
+        <td>Visualizar mapa interativo de alertas ativos</td>
+        <td class="pts">13</td>
+      </tr>
+      <tr>
+        <td><strong></strong></td>
+        <td style="text-align:right;font-weight:500;color:var(--text-secondary)">Total da sprint</td>
+        <td class="pts">34</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Histórias do backlog da sprint</h2>
+
+  <div class="story-card">
+    <div class="story-header">
+      <span class="story-num">BP-01</span>
+      <span class="story-title">Visualizar nível atual de rios por município</span>
+    </div>
+    <div class="section-label">Descrição da história</div>
+    <p class="story-desc">Como morador ou agente de Defesa Civil de um município gaúcho, quero consultar o nível atual dos rios e bacias da minha região para saber se há risco de inundação e tomar decisões preventivas com antecedência.</p>
+    <div class="section-label">Protótipo de interface</div>
+    <p style="font-size:13px;color:var(--text-secondary);margin-bottom:.4rem">Tela com campo de busca de município, cards de estações com medidor de nível e indicador de cota (atenção / alerta / inundação).</p>
+    <button class="proto-link" onclick="sendPrompt('Gere o protótipo de interface da história BP-01 do AlertaRS: tela de visualização do nível atual de rios por município, com busca, cards de estações e indicador de cota colorido')">↗ Gerar protótipo desta tela</button>
+    <div class="section-label">Tarefas e responsabilidades</div>
+    <div class="tasks">
+      <div class="task-row"><span class="task-dot"></span><span><strong>Integrante 3 (Dev):</strong> Integrar API ClimaRS para busca de dados de nível por município</span></div>
+      <div class="task-row"><span class="task-dot"></span><span><strong>Integrante 4 (Dev):</strong> Desenvolver componente de card de estação com medidor visual de cota</span></div>
+      <div class="task-row"><span class="task-dot"></span><span><strong>Integrante 5 (Dev):</strong> Implementar campo de busca e filtro por município com retorno dos dados</span></div>
+      <div class="task-row"><span class="task-dot"></span><span><strong>Integrante 1 (PO):</strong> Validar se a exibição das cotas atende ao critério da Defesa Civil</span></div>
+      <div class="task-row"><span class="task-dot"></span><span><strong>Integrante 2 (SM):</strong> Coordenar revisão de progresso nas dailies e remover impedimentos</span></div>
+    </div>
+  </div>
+
+  <div class="story-card">
+    <div class="story-header">
+      <span class="story-num">BP-02</span>
+      <span class="story-title">Consultar histórico de chuva acumulada</span>
+    </div>
+    <div class="section-label">Descrição da história</div>
+    <p class="story-desc">Como técnico ambiental ou pesquisador, quero visualizar o histórico de precipitação acumulada por estação meteorológica em um período específico para analisar tendências pluviométricas e correlacionar com eventos de cheia.</p>
+    <div class="section-label">Protótipo de interface</div>
+    <p style="font-size:13px;color:var(--text-secondary);margin-bottom:.4rem">Tela com seleção de estação e intervalo de datas, gráfico de barras/linha com precipitação diária acumulada e totalizador do período.</p>
+    <button class="proto-link" onclick="sendPrompt('Gere o protótipo de interface da história BP-02 do AlertaRS: tela de histórico de chuva acumulada, com seleção de estação meteorológica, filtro de período e gráfico de precipitação')">↗ Gerar protótipo desta tela</button>
+    <div class="section-label">Tarefas e responsabilidades</div>
+    <div class="tasks">
+      <div class="task-row"><span class="task-dot"></span><span><strong>Integrante 3 (Dev):</strong> Consultar e tratar dados históricos de precipitação da API ClimaRS</span></div>
+      <div class="task-row"><span class="task-dot"></span><span><strong>Integrante 4 (Dev):</strong> Desenvolver gráfico de séries temporais (precipitação × data)</span></div>
+      <div class="task-row"><span class="task-dot"></span><span><strong>Integrante 5 (Dev):</strong> Implementar seletor de estação e filtro de período (data início / data fim)</span></div>
+      <div class="task-row"><span class="task-dot"></span><span><strong>Integrante 1 (PO):</strong> Validar se os dados exibidos correspondem ao período e estação selecionados</span></div>
+      <div class="task-row"><span class="task-dot"></span><span><strong>Integrante 2 (SM):</strong> Monitorar prazo de entrega e garantir integração entre frontend e dados</span></div>
+    </div>
+  </div>
+
+  <div class="story-card">
+    <div class="story-header">
+      <span class="story-num">BP-03</span>
+      <span class="story-title">Visualizar mapa interativo de alertas ativos</span>
+    </div>
+    <div class="section-label">Descrição da história</div>
+    <p class="story-desc">Como cidadão ou gestor municipal, quero visualizar em um mapa do Rio Grande do Sul os alertas hidrológicos ativos por região, com codificação por cor de severidade, para identificar rapidamente as áreas em situação crítica.</p>
+    <div class="section-label">Protótipo de interface</div>
+    <p style="font-size:13px;color:var(--text-secondary);margin-bottom:.4rem">Mapa interativo do RS com marcadores coloridos (verde/amarelo/laranja/vermelho) por nível de alerta, legenda lateral e painel de detalhe ao clicar em uma estação.</p>
+    <button class="proto-link" onclick="sendPrompt('Gere o protótipo de interface da história BP-03 do AlertaRS: mapa interativo do RS com marcadores de alertas hidrológicos por nível de severidade, legenda e painel de detalhe')">↗ Gerar protótipo desta tela</button>
+    <div class="section-label">Tarefas e responsabilidades</div>
+    <div class="tasks">
+      <div class="task-row"><span class="task-dot"></span><span><strong>Integrante 3 (Dev):</strong> Integrar biblioteca de mapa (ex.: Leaflet.js) com dados de localização das estações</span></div>
+      <div class="task-row"><span class="task-dot"></span><span><strong>Integrante 4 (Dev):</strong> Implementar marcadores dinâmicos com cor conforme status de alerta da estação</span></div>
+      <div class="task-row"><span class="task-dot"></span><span><strong>Integrante 5 (Dev):</strong> Desenvolver painel lateral de detalhe ao selecionar uma estação no mapa</span></div>
+      <div class="task-row"><span class="task-dot"></span><span><strong>Integrante 1 (PO):</strong> Validar legenda e critérios de classificação de severidade com referência da Defesa Civil</span></div>
+      <div class="task-row"><span class="task-dot"></span><span><strong>Integrante 2 (SM):</strong> Facilitar alinhamento entre desenvolvedores e revisar consistência dos dados no mapa</span></div>
+    </div>
+  </div>
+</div>

@@ -1,99 +1,99 @@
-# ClimaRS Monitor
+# AlertaRS
 
-**Sistema de Monitoramento Hidrometeorológico e Alertas de Risco do Rio Grande do Sul**
+**Painel de Monitoramento Hidrológico e Prevenção Climática do Rio Grande do Sul**
 
 > **Projeto Integrador IV** — Universidade de Caxias do Sul (UCS)  
-> Bacharelado em Ciência da Computação / Análise e Desenvolvimento de Sistemas
+> Curso de Análise e Desenvolvimento de Sistemas / Ciência da Computação
 
 ---
 
-## 📌 Visão Geral
+## 📌 Sobre o Projeto
 
-O **ClimaRS Monitor** é um aplicativo web voltado ao acompanhamento em tempo real dos níveis fluviométricos (rios), cotas de emergência (atenção, alerta e inundação), acumulados pluviais (chuvas) e boletins de risco no Estado do Rio Grande do Sul.
+O **AlertaRS** é uma aplicação web voltada ao monitoramento em tempo real e análise histórica das condições hidrológicas e meteorológicas dos municípios e bacias hidrográficas do Estado do Rio Grande do Sul. 
 
-A solução foi projetada para processar dados abertos governamentais, transformando dados brutos de estações de monitoramento em informações visuais e alertas preventivos para a população e gestores públicos.
-
----
-
-## 📡 Fonte de Dados
-
-Os dados utilizados pelo aplicativo são obtidos de fontes públicas do Governo do Estado do RS:
-
-- **Entidades:** PROCERGS, SEMA (Secretaria do Meio Ambiente e Infraestrutura) e Defesa Civil do RS.
-- **Plataforma Original:** [ClimaRS](https://climars.rs.gov.br)
-- **Dados Ingeridos:**
-  - Níveis fluviométricos contínuos em metros e cotas limiares de segurança.
-  - Acumulados pluviométricos (mm) por períodos de 24h, 48h e 72h.
-  - Boletins e avisos de risco de enxurrada, inundação e deslizamento.
+O sistema processa dados contínuos de telemetria fluviométrica (níveis dos rios e réguas linimétricas) e pluviométrica (chuva acumulada em mm), calculando a proximidade em relação às cotas de segurança (atenção, alerta e inundação) e exibindo mapas interativos e boletins da Defesa Civil.
 
 ---
 
-## 📋 Artefatos do Scrum (Etapa 1)
+## 📡 Fonte de Dados Pública
 
-### Estrutura da Equipe
-- **Product Owner:** `[Nome do Integrante 1]`
-- **Scrum Master:** `[Nome do Integrante 2]`
-- **Desenvolvedores:** `[Nome do Integrante 3]`, `[Nome do Integrante 4]`, `[Nome do Integrante 5]`, `[Nome do Integrante 6]`, `[Nome do Integrante 7]`
-
----
-
-### Product Backlog
-
-| ID | Funcionalidade | Esforço (Story Points) | Descrição |
-| :---: | :--- | :---: | :--- |
-| **US-01** | Painel Hidrológico Interativo | **13 pts** | Gráficos temporais de nível dos rios vs. cotas de inundação |
-| **US-02** | Mapa Pluviométrico e Acumulado de Chuva | **8 pts** | Visualização de precipitação acumulada por bacia/município |
-| **US-03** | Central de Alertas da Defesa Civil | **5 pts** | Feed de avisos de risco filtráveis por severidade e região |
-| **US-04** | Relatórios Históricos e Comparativos | **8 pts** | Comparação de dados pluviais entre anos anteriores |
-| **US-05** | Gestão de Locais Favoritos e Limiares | **3 pts** | Configuração de municípios salvos e gatilhos de aviso |
-
-> [!NOTE]
-> O Backlog do Produto contempla apenas funcionalidades com valor de negócio direto para o usuário final, excluindo rotinas internas ou cadastros de autenticação.
+- **Entidade Responsável:** Plataforma ClimaRS – Secretaria do Meio Ambiente e Infraestrutura (SEMA) / Defesa Civil do RS / PROCERGS.
+- **Endereço do Portal:** [https://clima.rs.gov.br](https://clima.rs.gov.br)
+- **Carta de Serviços RS:** [rs.gov.br/carta-de-servicos](https://www.rs.gov.br/carta-de-servicos/servicos?servico=3287)
 
 ---
 
-### Sprint Backlog (Versão 1)
+## 👥 Equipe e Estrutura Scrum
 
-**Velocidade Estimada da Sprint:** 21 Story Points
-
-1. **US-01: Painel Hidrológico Interativo (13 pts)** — Processamento e exibição de níveis vs. cotas de inundação.
-2. **US-03: Central de Alertas da Defesa Civil (5 pts)** — Feed de emergências regionalizado.
-3. **US-05: Gestão de Locais Favoritos (3 pts)** — Personalização de municípios e limiares de notificação.
-
----
-
-## 🖼️ Protótipos de Interface
-
-### 1. Painel Hidrológico Interativo (US-01)
-Gráficos de níveis fluviométricos em tempo real com linhas horizontais de Cota de Atenção (amarelo), Alerta (laranja) e Inundação (vermelho).
-
-![Painel Hidrológico Interativo](prototipos/prototipo_1_painel_hidrologico.jpg)
+| Integrante | Papel no Scrum | Responsabilidades |
+| :--- | :--- | :--- |
+| `[Integrante 1]` | **Product Owner** | Visão do produto, gestão do Backlog do Produto e validação das cotas |
+| `[Integrante 2]` | **Scrum Master** | Facilitação do processo Scrum, dailies e remoção de impedimentos |
+| `[Integrante 3]` | **Desenvolvedor** | Integração das APIs ClimaRS (níveis, precipitação e mapas) |
+| `[Integrante 4]` | **Desenvolvedor** | Engenharia dos componentes de cards, medidores e gráficos de séries temporais |
+| `[Integrante 5]` | **Desenvolvedor** | Desenvolvimento dos filtros de busca, seletores e painel lateral de detalhes |
 
 ---
 
-### 2. Central de Alertas e Emergências (US-03)
-Cartões coloridos por grau de severidade (Inundação, Enxurrada/Deslizamento, Pluviométrico) e canal de emergência.
+## 📊 Artefatos do Scrum (Etapa 1)
 
-![Central de Alertas e Emergências](prototipos/prototipo_2_central_alertas.jpg)
+### Product Backlog (8 Necessidades Priorizadas)
+
+| # | Funcionalidade | Pontos | Escopo |
+| :---: | :--- | :---: | :---: |
+| **BP-01** | **Visualizar nível atual de rios e bacias por município** | **13** | **Sprint 1** |
+| **BP-02** | **Consultar histórico de chuva acumulada por estação meteorológica** | **8** | **Sprint 1** |
+| **BP-03** | **Visualizar mapa interativo de alertas ativos** | **13** | **Sprint 1** |
+| **BP-04** | Consultar histórico de alertas emitidos pela Defesa Civil | 8 | Backlog |
+| **BP-05** | Comparar municípios por indicadores hidrológicos | 8 | Backlog |
+| **BP-06** | Exibir dashboard com indicadores consolidados do estado | 5 | Backlog |
+| **BP-07** | Filtrar estações por bacia hidrográfica | 5 | Backlog |
+| **BP-08** | Exportar relatório de dados por município e período | 5 | Backlog |
+
+*Total do Product Backlog: 68 Story Points.*
 
 ---
 
-### 3. Configuração de Locais Favoritos (US-05)
-Interface para cadastro de municípios de interesse e ajuste de sliders para gatilhos de notificação.
+### Sprint Backlog (Sprint 1)
 
-![Gestão de Locais Favoritos](prototipos/prototipo_3_favoritos_config.jpg)
+- **Velocidade Estimada da Equipe:** **34 Story Points / sprint**
+- **Itens Priorizados:** `BP-01` (13 pts) + `BP-02` (8 pts) + `BP-03` (13 pts) = **34 pts**
 
 ---
 
-## 📂 Estrutura de Arquivos
+## 🎨 Protótipos de Interface (Sprint 1)
+
+### BP-01: Visualizar Nível Atual de Rios por Município (13 pts)
+*Pesquisa por município, cards de estações com medidores visuais de nível e cotas limiares.*
+
+![Protótipo BP-01](prototipos/bp01_nivel_rios.jpg)
+
+---
+
+### BP-02: Consultar Histórico de Chuva Acumulada (8 pts)
+*Seletor de estação meteorológica, intervalo de datas e gráfico de precipitação acumulada.*
+
+![Protótipo BP-02](prototipos/bp02_historico_chuva.jpg)
+
+---
+
+### BP-03: Visualizar Mapa Interativo de Alertas Ativos (13 pts)
+*Mapa interativo do RS com marcadores por cor de severidade e painel de detalhamento da estação.*
+
+![Protótipo BP-03](prototipos/bp03_mapa_alertas.jpg)
+
+---
+
+## 📁 Estrutura do Repositório
 
 ```text
 .
-├── README.md                          # Documentação técnica do projeto
+├── README.md                          # Documentação e apresentação do projeto AlertaRS
 ├── Etapa_1_Projeto_Integrador.md      # Relatório completo para entrega acadêmica (PDF)
-├── Orientações para o Projeto.pdf     # Requisitos e critérios de avaliação do PI IV (UCS)
+├── alerta_rs_backlog_e_historias.html # Template visual HTML dos artefatos do projeto
+├── Orientações para o Projeto.pdf     # Diretrizes e edital do PI IV (UCS)
 └── prototipos/                        # Imagens dos protótipos visuais de interface
-    ├── prototipo_1_painel_hidrologico.jpg
-    ├── prototipo_2_central_alertas.jpg
-    └── prototipo_3_favoritos_config.jpg
+    ├── bp01_nivel_rios.jpg
+    ├── bp02_historico_chuva.jpg
+    └── bp03_mapa_alertas.jpg
 ```

@@ -6,98 +6,105 @@
 
 ## 1. Identificação do Grupo e Responsabilidades no Scrum
 
-- **Product Owner:** `[Nome do Integrante 1 - PO]`
-- **Scrum Master:** `[Nome do Integrante 2 - SM]`
-- **Desenvolvedor 1:** `[Nome do Integrante 3 - Dev]`
-- **Desenvolvedor 2:** `[Nome do Integrante 4 - Dev]`
-- **Desenvolvedor 3:** `[Nome do Integrante 5 - Dev]`
+- **Product Owner:** `[Integrante 1]`
+- **Scrum Master:** `[Integrante 2]`
+- **Desenvolvedor 1:** `[Integrante 3]`
+- **Desenvolvedor 2:** `[Integrante 4]`
+- **Desenvolvedor 3:** `[Integrante 5]`
 
 ---
 
 ## 2. Definição do Projeto e Fonte de Dados
 
-- **Nome do Projeto:** ClimaRS Monitor
-- **Objetivo do Projeto:** Desenvolver um aplicativo (software web) focado no monitoramento e processamento de dados hidrometeorológicos do Estado do Rio Grande do Sul. A solução processa dados contínuos de níveis fluviométricos (rios), cotas limiares de emergência (atenção, alerta e inundação) e acumulados pluviométricos (chuvas) por região, apresentando dashboards interativos e alertas consolidados da Defesa Civil para auxiliar na tomada de decisão e prevenção de desastres.
+- **Nome do Projeto:** AlertaRS – Painel de Monitoramento Hidrológico e Prevenção Climática
+- **Objetivo do Projeto:** Desenvolver uma aplicação web voltada ao monitoramento em tempo real e análise histórica das condições hidrológicas e meteorológicas dos municípios e bacias hidrográficas do Rio Grande do Sul. O sistema processa dados de telemetria (níveis de rios e réguas linimétricas) e estações meteorológicas (volume de chuva acumulada), calculando automaticamente a proximidade em relação às cotas de atenção, alerta e inundação, além de prover dashboards comparativos e histórico de alertas da Defesa Civil para suporte à decisão comunitária e preventiva.
 - **Fonte de Dados:** 
-  - **Organização / Entidade:** Governo do Estado do Rio Grande do Sul (PROCERGS - Companhia de Processamento de Dados do Estado do RS, SEMA - Secretaria do Meio Ambiente e Infraestrutura, e Defesa Civil do RS).
-  - **Local da Fonte (URL):** [https://climars.rs.gov.br](https://climars.rs.gov.br) (Portais de Dados Abertos e APIs de Monitoramento Hidrometeorológico).
+  - **Organização / Entidade:** Plataforma ClimaRS – Secretaria do Meio Ambiente e Infraestrutura (SEMA) / Defesa Civil do RS / PROCERGS.
+  - **Local da Fonte (URL):** [https://clima.rs.gov.br](https://clima.rs.gov.br) (Carta de Serviços RS: [rs.gov.br/carta-de-servicos](https://www.rs.gov.br/carta-de-servicos/servicos?servico=3287)).
 
 ---
 
 ## 3. Artefato 1: Backlog do Produto (Product Backlog)
 
-Abaixo estão listadas as 5 necessidades dos usuários para o aplicativo **ClimaRS Monitor**, priorizadas e pontuadas com base em Story Points (estimativa por Planning Poker).
+Abaixo encontra-se a lista de todas as 8 necessidades do usuário priorizadas e pontuadas em Story Points (estimativa por Planning Poker):
 
-| ID | Necessidade do Usuário / Funcionalidade | Pontuação (Story Points) | Descrição do Valor de Negócio |
-| :---: | :--- | :---: | :--- |
-| **US-01** | **Painel Hidrológico Interativo (Nível dos Rios vs. Cotas)** | **13 pts** | Permitir que os usuários acompanhem o nível dos rios em tempo real com gráficos temporais e linha horizontal comparativa das cotas de atenção, alerta e inundação. |
-| **US-02** | **Mapa Pluviométrico e Acumulado de Chuva** | **8 pts** | Apresentar gráficos e estatísticas comparativas do volume acumulado de precipitação (24h, 48h e 72h) agrupados por bacia hidrográfica e município. |
-| **US-03** | **Central de Alertas e Avisos de Emergência** | **5 pts** | Apresentar uma lista filtrável de alertas vigentes emitidos pela Defesa Civil do RS por nível de severidade (atenção, alerta, emergência) e localização. |
-| **US-04** | **Relatórios Históricos e Análise Comparativa** | **8 pts** | Permitir a geração de pesquisas históricas e gráficos comparativos de vazão e chuva entre anos anteriores para análise de tendências. |
-| **US-05** | **Gestão de Locais Favoritos e Limiares Personalizados** | **3 pts** | Permitir ao usuário favoritar municípios de interesse e configurar limiares customizados para gatilhos de aviso no aplicativo. |
+| # | Necessidade do Usuário / Funcionalidade | Pontuação (Story Points) | Status |
+| :---: | :--- | :---: | :---: |
+| **BP-01** | **Visualizar nível atual de rios e bacias por município** — O usuário seleciona um município e vê os níveis de rios em tempo real, com indicação visual das cotas (atenção, alerta, inundação). | **13 pts** | **Sprint 1** |
+| **BP-02** | **Consultar histórico de chuva acumulada por estação meteorológica** — O usuário filtra por estação e período e visualiza o volume de precipitação acumulada em gráfico de séries temporais. | **8 pts** | **Sprint 1** |
+| **BP-03** | **Visualizar mapa interativo de alertas ativos** — Exibe um mapa do RS com marcadores coloridos por nível de alerta (verde, amarelo, laranja, vermelho) para cada estação/município monitorado. | **13 pts** | **Sprint 1** |
+| **BP-04** | **Consultar histórico de alertas emitidos pela Defesa Civil** — O usuário filtra por município e período e acessa os registros de eventos de alerta anteriores com data, tipo e nível. | **8 pts** | Backlog futuro |
+| **BP-05** | **Comparar municípios por indicadores hidrológicos** — O usuário seleciona até 3 municípios e visualiza um painel comparativo com nível do rio, chuva acumulada e status de alerta lado a lado. | **8 pts** | Backlog futuro |
+| **BP-06** | **Exibir dashboard com indicadores consolidados do estado** — Visão geral com totais de estações em alerta, municípios críticos, precipitação média e tendência das últimas 24h. | **5 pts** | Backlog futuro |
+| **BP-07** | **Filtrar estações por bacia hidrográfica** — O usuário seleciona uma bacia e visualiza apenas as estações pertencentes a ela, com os dados de nível e chuva correspondentes. | **5 pts** | Backlog futuro |
+| **BP-08** | **Exportar relatório de dados por município e período** — O usuário gera e baixa um arquivo com os dados de nível e precipitação de um município em um intervalo de datas selecionado. | **5 pts** | Backlog futuro |
 
-*Nota: Conforme as orientações do Projeto Integrador IV, a lista acima contempla apenas funcionalidades de valor direto ao usuário final, excluindo requisitos não-funcionais e funções de autenticação/login.*
+*Total do Product Backlog: 68 Story Points.*
 
 ---
 
 ## 4. Artefato 2: Backlog da Sprint (Sprint Backlog - 1ª Entrega)
 
-Para a primeira versão funcional (Sprint 1), a equipe selecionou **3 itens do Backlog do Produto**, totalizando uma velocidade estimada de **21 Story Points**. 
+Para o primeiro ciclo de desenvolvimento (Sprint 1), foram priorizados **3 itens do Backlog do Produto**, totalizando uma estimativa de velocidade da equipe de **34 Story Points**.
 
-- **Velocidade Estimada da Equipe:** 21 Story Points.
+- **Velocidade Estimada da Equipe:** 34 Story Points / sprint.
 
 ### Itens Selecionados para a Sprint 1:
-1. **US-01: Painel Hidrológico Interativo (13 pts)** — Funcionalidade principal de processamento de dados (cálculo de níveis de rios vs. cotas limiares de inundação).
-2. **US-03: Central de Alertas e Avisos de Emergência (5 pts)** — Exibição filtrada dos alertas e orientações de risco da Defesa Civil.
-3. **US-05: Gestão de Locais Favoritos e Limiares Personalizados (3 pts)** — Configuração de preferências e municípios de interesse do usuário.
+1. **BP-01: Visualizar nível atual de rios e bacias por município (13 pts)** — Funcionalidade de manipulação de telemetria e calculador de cotas.
+2. **BP-02: Consultar histórico de chuva acumulada por estação meteorológica (8 pts)** — Análise temporal pluviométrica.
+3. **BP-03: Visualizar mapa interativo de alertas ativos (13 pts)** — Mapa cartográfico dinâmico com marcadores por severidade.
+
+**Total da Sprint 1:** 34 Story Points.
 
 ---
 
 ## 5. Artefato 3: Detalhamento das Histórias, Protótipos e Tarefas da Equipe
 
-### História 1: US-01 — Painel Hidrológico Interativo (13 pts)
-- **Descrição da História:** *Como morador ou gestor público no Rio Grande do Sul, eu quero visualizar os níveis atuais dos rios comparados às cotas de atenção, alerta e inundação em um painel interativo, para que eu possa acompanhar a evolução das águas e antecipar riscos de alagamento.*
+### História 1: BP-01 — Visualizar nível atual de rios por município (13 pts)
+- **Descrição da História:** *Como morador ou agente de Defesa Civil de um município gaúcho, quero consultar o nível atual dos rios e bacias da minha região para saber se há risco de inundação e tomar decisões preventivas com antecedência.*
 - **Critérios de Aceitação:**
-  - O gráfico deve exibir o nível em metros do rio selecionado ao longo do tempo (últimos 7 dias).
-  - Devem ser desenhadas linhas de referência horizontais para a Cota de Atenção (amarelo), Cota de Alerta (laranja) e Cota de Inundação (vermelho).
-  - Deve ser possível selecionar entre diferentes estações fluviométricas (ex: Rio Guaíba - Cais Mauá, Rio Taquari - Estrela, Rio Jacuí).
+  - Exibição de campo de busca por município do RS.
+  - Exibição de cards de estações fluviométricas com medidor de nível em metros.
+  - Indicadores de estado visual: Cota de Atenção (amarelo), Cota de Alerta (laranja) e Cota de Inundação (vermelho).
 - **Protótipo de Interface (História 1):**
-  ![Painel Hidrológico Interativo ClimaRS](prototipos/prototipo_1_painel_hidrologico.jpg)
-
+  ![Protótipo BP-01: Visualizar Nível Atual de Rios por Município](prototipos/bp01_nivel_rios.jpg)
 - **Tarefas e Responsabilidades (Scrum):**
-  - `T-01.1`: Coleta e ingestão de dados hidrológicos da API ClimaRS/PROCERGS (*Responsável: `[Nome do Integrante 3 - Dev]`*).
-  - `T-01.2`: Desenvolvimento do componente gráfico interativo de nível vs. cotas (*Responsável: `[Nome do Integrante 4 - Dev]`*).
-  - `T-01.3`: Construção do seletor de estações fluviométricas e cards de resumo (*Responsável: `[Nome do Integrante 5 - Dev]`*).
-  - `T-01.4`: Validação dos critérios de aceitação e revisão da história (*Responsável: `[Nome do Integrante 1 - PO]`*).
+  - `T-01.1`: Integrar API ClimaRS para busca de dados de nível por município (*Responsável: `[Integrante 3 - Dev]`*).
+  - `T-01.2`: Desenvolver componente de card de estação com medidor visual de cota (*Responsável: `[Integrante 4 - Dev]`*).
+  - `T-01.3`: Implementar campo de busca e filtro por município com retorno dos dados (*Responsável: `[Integrante 5 - Dev]`*).
+  - `T-01.4`: Validar se a exibição das cotas atende ao critério da Defesa Civil (*Responsável: `[Integrante 1 - PO]`*).
+  - `T-01.5`: Coordenar revisão de progresso nas dailies e remover impedimentos (*Responsável: `[Integrante 2 - SM]`*).
 
 ---
 
-### História 2: US-03 — Central de Alertas e Avisos de Emergência (5 pts)
-- **Descrição da História:** *Como cidadão, eu quero acessar a central de alertas da Defesa Civil filtrada por região e grau de severidade, para que eu saiba rapidamente quais municípios estão em estado de emergência ou alerta.*
+### História 2: BP-02 — Consultar histórico de chuva acumulada (8 pts)
+- **Descrição da História:** *Como técnico ambiental ou pesquisador, quero visualizar o histórico de precipitação acumulada por estação meteorológica em um período específico para analisar tendências pluviométricas e correlacionar com eventos de cheia.*
 - **Critérios de Aceitação:**
-  - Exibição de cartões coloridos conforme o nível de severidade (Vermelho = Risco Severo/Inundação, Laranja = Enxurrada/Deslizamento, Amarelo = Aviso Pluviométrico).
-  - Filtros por região (Região Metropolitana, Serra, Vale do Taquari, Litoral) e nível de risco.
-  - Botão com números de emergência da Defesa Civil (199 / 193).
+  - Seletor de estação meteorológica e filtro de período (data início / data fim).
+  - Gráfico de precipitação diária acumulada (mm) em séries temporais.
+  - Exibição do total acumulado e indicador de médias históricas.
 - **Protótipo de Interface (História 2):**
-  ![Central de Alertas e Emergências ClimaRS](prototipos/prototipo_2_central_alertas.jpg)
-
+  ![Protótipo BP-02: Consultar Histórico de Chuva Acumulada](prototipos/bp02_historico_chuva.jpg)
 - **Tarefas e Responsabilidades (Scrum):**
-  - `T-03.1`: Modelagem dos alertas da Defesa Civil e filtros por município/região (*Responsável: `[Nome do Integrante 3 - Dev]`*).
-  - `T-03.2`: Criação do layout visual dos cartões de emergência e botões de contato (*Responsável: `[Nome do Integrante 5 - Dev]`*).
-  - `T-03.3`: Facilitação do acompanhamento e remoção de impedimentos da equipe (*Responsável: `[Nome do Integrante 2 - SM]`*).
+  - `T-02.1`: Consultar e tratar dados históricos de precipitação da API ClimaRS (*Responsável: `[Integrante 3 - Dev]`*).
+  - `T-02.2`: Desenvolver gráfico de séries temporais (precipitação × data) (*Responsável: `[Integrante 4 - Dev]`*).
+  - `T-02.3`: Implementar seletor de estação e filtro de período (data início / data fim) (*Responsável: `[Integrante 5 - Dev]`*).
+  - `T-02.4`: Validar se os dados exibidos correspondem ao período e estação selecionados (*Responsável: `[Integrante 1 - PO]`*).
+  - `T-02.5`: Monitorar prazo de entrega e garantir integração entre frontend e dados (*Responsável: `[Integrante 2 - SM]`*).
 
 ---
 
-### História 3: US-05 — Gestão de Locais Favoritos e Limiares Personalizados (3 pts)
-- **Descrição da História:** *Como usuário da plataforma, eu quero salvar meus municípios de interesse e personalizar os limiares de chuva/nível para notificações, para receber avisos sob medida para a minha localidade.*
+### História 3: BP-03 — Visualizar mapa interativo de alertas ativos (13 pts)
+- **Descrição da História:** *Como cidadão ou gestor municipal, quero visualizar em um mapa do Rio Grande do Sul os alertas hidrológicos ativos por região, com codificação por cor de severidade, para identificar rapidamente as áreas em situação crítica.*
 - **Critérios de Aceitação:**
-  - Interface para busca e adição de novos municípios aos favoritos.
-  - Sliders para ajuste dos limiares de cota (metros) e precipitação (mm/h).
-  - Botões de alternância (toggles) para escolha dos canais de notificação (SMS, Push, WhatsApp).
+  - Mapa interativo do RS com marcadores coloridos por severidade (Verde = Normal, Amarelo = Atenção, Laranja = Alerta, Vermelho = Emergência).
+  - Painel lateral de legenda e suporte a filtros de severidade.
+  - Slide-over / modal de detalhamento da estação ao clicar no marcador.
 - **Protótipo de Interface (História 3):**
-  ![Gestão de Locais e Notificações ClimaRS](prototipos/prototipo_3_favoritos_config.jpg)
-
+  ![Protótipo BP-03: Visualizar Mapa Interativo de Alertas Ativos](prototipos/bp03_mapa_alertas.jpg)
 - **Tarefas e Responsabilidades (Scrum):**
-  - `T-05.1`: Implementação do armazenamento de locais favoritos do usuário (*Responsável: `[Nome do Integrante 4 - Dev]`*).
-  - `T-05.2`: Construção dos componentes de slider de limiares e toggles de notificação (*Responsável: `[Nome do Integrante 5 - Dev]`*).
-  - `T-05.3`: Validação do protótipo com a visão de produto (*Responsável: `[Nome do Integrante 1 - PO]`*).
+  - `T-03.1`: Integrar biblioteca de mapa (ex.: Leaflet.js) com dados de localização das estações (*Responsável: `[Integrante 3 - Dev]`*).
+  - `T-03.2`: Implementar marcadores dinâmicos com cor conforme status de alerta da estação (*Responsável: `[Integrante 4 - Dev]`*).
+  - `T-03.3`: Desenvolver painel lateral de detalhe ao selecionar uma estação no mapa (*Responsável: `[Integrante 5 - Dev]`*).
+  - `T-03.4`: Validar legenda e critérios de classificação de severidade com referência da Defesa Civil (*Responsável: `[Integrante 1 - PO]`*).
+  - `T-03.5`: Facilitar alinhamento entre desenvolvedores e revisar consistência dos dados no mapa (*Responsável: `[Integrante 2 - SM]`*).
