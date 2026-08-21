@@ -1,38 +1,51 @@
-# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
-
-# dependencies
+# Dependências
 node_modules/
 
-# Expo
-.expo/
+# Build
 dist/
-web-build/
-expo-env.d.ts
+build/
 
-# Native
-*.orig.*
-*.jks
-*.p8
-*.p12
-*.key
-*.mobileprovision
+# Bun
+bun.lockb
+.bun/
 
-# Metro
-.metro-health-check*
+# Vite
+*.local
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
 
-# debug
+# Variáveis de ambiente
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
 npm-debug.*
 yarn-debug.*
 yarn-error.*
+bun-error.*
+*.log
+logs/
+
+# Editor / IDE
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
 # macOS
 .DS_Store
 *.pem
 
-# local env files
-.env*.local
+# Linux
+*~
 
-# typescript
-*.tsbuildinfo
-
-app-example
+# Cache
+.cache/
+.eslintcache
+.stylelintcache
