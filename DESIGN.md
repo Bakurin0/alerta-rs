@@ -1,5 +1,7 @@
 # AlertaRS — Design System & Especificações de Tela
 
+> **Revisão de escopo:** este documento foi extraído dos protótipos iniciais e ainda contém referências visuais a alertas e cotas oficiais. Esses elementos não fazem mais parte do escopo porque não foi identificada uma API pública documentada que os forneça. Na próxima revisão visual, severidades devem ser substituídas por estados neutros de disponibilidade e medição. Consulte `docs/arquitetura-e-dados.md`.
+
 Documentação de design extraída das 4 telas do Figma do projeto AlertaRS.
 
 ---
