@@ -11,15 +11,19 @@
 
 O **AlertaRS** é uma aplicação web voltada ao monitoramento em tempo real e análise histórica das condições hidrológicas e meteorológicas dos municípios e bacias hidrográficas do Estado do Rio Grande do Sul. 
 
-O sistema processa dados contínuos de telemetria fluviométrica (níveis dos rios e réguas linimétricas) e pluviométrica (chuva acumulada em mm), calculando a proximidade em relação às cotas de segurança (atenção, alerta e inundação) e exibindo mapas interativos e boletins da Defesa Civil.
+O sistema consulta dados de telemetria fluviométrica e pluviométrica em APIs e apresenta níveis dos rios, chuva acumulada, séries históricas e a localização das estações. O AlertaRS tem caráter informativo e não emite alertas oficiais.
 
 ---
 
-## 📡 Fonte de Dados Pública
+## 📡 Fontes de Dados Planejadas
 
-- **Entidade Responsável:** Plataforma ClimaRS – Secretaria do Meio Ambiente e Infraestrutura (SEMA) / Defesa Civil do RS / PROCERGS.
-- **Endereço do Portal:** [https://clima.rs.gov.br](https://clima.rs.gov.br)
-- **Carta de Serviços RS:** [rs.gov.br/carta-de-servicos](https://www.rs.gov.br/carta-de-servicos/servicos?servico=3287)
+- **Fonte principal:** API HidroWebService da Agência Nacional de Águas e Saneamento Básico (ANA), que oferece inventário e séries de chuva, nível e vazão.
+- **Fonte cartográfica:** API de Malhas do IBGE.
+- **Estado atual:** a aplicação usa dados simulados explicitamente identificados. A integração depende de solicitação de credenciais e validação do contrato com a ANA.
+
+Consulte [docs/arquitetura-e-dados.md](docs/arquitetura-e-dados.md) para o mapeamento técnico e os riscos conhecidos.
+
+O acompanhamento do que já foi implementado e do que ainda depende da equipe ou de serviços externos está em [docs/pendencias.md](docs/pendencias.md).
 
 ---
 
@@ -27,11 +31,11 @@ O sistema processa dados contínuos de telemetria fluviométrica (níveis dos ri
 
 | Integrante | Papel no Scrum | Responsabilidades |
 | :--- | :--- | :--- |
-| `[Integrante 1]` | **Product Owner** | Visão do produto, gestão do Backlog do Produto e validação das cotas |
+| `[Integrante 1]` | **Product Owner** | Visão do produto, gestão do Backlog e validação das informações exibidas |
 | `[Integrante 2]` | **Scrum Master** | Facilitação do processo Scrum, dailies e remoção de impedimentos |
-| `[Integrante 3]` | **Desenvolvedor** | Integração das APIs ClimaRS (níveis, precipitação e mapas) |
+| `[Integrante 3]` | **Desenvolvedor** | Integração da API HidroWebService/ANA |
 | `[Integrante 4]` | **Desenvolvedor** | Engenharia dos componentes de cards, medidores e gráficos de séries temporais |
-| `[Integrante 5]` | **Desenvolvedor** | Desenvolvimento dos filtros de busca, seletores e painel lateral de detalhes |
+| `[Integrante 5]` | **Desenvolvedor** | Integração da malha do IBGE, filtros e painel de detalhes |
 
 ---
 
@@ -41,12 +45,12 @@ O sistema processa dados contínuos de telemetria fluviométrica (níveis dos ri
 
 | # | Funcionalidade | Pontos | Escopo |
 | :---: | :--- | :---: | :---: |
-| **BP-01** | **Visualizar nível atual de rios e bacias por município** | **13** | **Sprint 1** |
+| **BP-01** | **Visualizar medições recentes por município** | **13** | **Sprint 1** |
 | **BP-02** | **Consultar histórico de chuva acumulada por estação meteorológica** | **8** | **Sprint 1** |
-| **BP-03** | **Visualizar mapa interativo de alertas ativos** | **13** | **Sprint 1** |
-| **BP-04** | Consultar histórico de alertas emitidos pela Defesa Civil | 8 | Backlog |
+| **BP-03** | **Visualizar mapa de estações hidrológicas** | **13** | **Sprint 1** |
+| **BP-04** | Consultar histórico de níveis dos rios | 8 | Backlog |
 | **BP-05** | Comparar municípios por indicadores hidrológicos | 8 | Backlog |
-| **BP-06** | Exibir dashboard com indicadores consolidados do estado | 5 | Backlog |
+| **BP-06** | Exibir resumo das estações consultadas | 5 | Backlog |
 | **BP-07** | Filtrar estações por bacia hidrográfica | 5 | Backlog |
 | **BP-08** | Exportar relatório de dados por município e período | 5 | Backlog |
 
@@ -63,8 +67,8 @@ O sistema processa dados contínuos de telemetria fluviométrica (níveis dos ri
 
 ## 🎨 Protótipos de Interface (Sprint 1)
 
-### BP-01: Visualizar Nível Atual de Rios por Município (13 pts)
-*Pesquisa por município, cards de estações com medidores visuais de nível e cotas limiares.*
+### BP-01: Visualizar Medições Recentes por Município (13 pts)
+*Pesquisa por município e cards com as medições retornadas pela ANA.*
 
 ![Protótipo BP-01](prototipos-ia-temporarios/bp01_nivel_rios.jpg)
 
@@ -77,8 +81,8 @@ O sistema processa dados contínuos de telemetria fluviométrica (níveis dos ri
 
 ---
 
-### BP-03: Visualizar Mapa Interativo de Alertas Ativos (13 pts)
-*Mapa interativo do RS com marcadores por cor de severidade e painel de detalhamento da estação.*
+### BP-03: Visualizar Mapa de Estações Hidrológicas (13 pts)
+*Mapa do RS obtido no IBGE com estações e painel de detalhamento das medições.*
 
 ![Protótipo BP-03](prototipos-ia-temporarios/bp03_mapa_alertas.jpg)
 
@@ -88,12 +92,19 @@ O sistema processa dados contínuos de telemetria fluviométrica (níveis dos ri
 
 ```text
 .
-├── README.md                          # Documentação e apresentação do projeto AlertaRS
-├── Etapa_1_Projeto_Integrador.md      # Relatório completo para entrega acadêmica (PDF)
-├── alerta_rs_backlog_e_historias.html # Template visual HTML dos artefatos do projeto
-├── Orientações para o Projeto.pdf     # Diretrizes e edital do PI IV (UCS)
-└── prototipos/                        # Imagens dos protótipos visuais de interface
-    ├── bp01_nivel_rios.jpg
-    ├── bp02_historico_chuva.jpg
-    └── bp03_mapa_alertas.jpg
+├── app/                               # Aplicação React/Vite e dados simulados
+├── docs/                              # Orientações, modelo e arquitetura de dados
+├── prototipos-ia-temporarios/         # Referências visuais ainda não definitivas
+├── Etapa-1.md                         # Relatório acadêmico da primeira entrega
+└── README.md                          # Apresentação do projeto
 ```
+
+## ▶️ Executar o início do desenvolvimento
+
+```bash
+cd app
+npm install
+npm run dev
+```
+
+Os valores exibidos são fictícios e servem apenas para validar a experiência e as regras do sistema.
