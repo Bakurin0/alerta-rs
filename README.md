@@ -67,6 +67,8 @@ O acompanhamento do que já foi implementado e do que ainda depende da equipe ou
 
 ## 🎨 Protótipos de Interface (Sprint 1)
 
+```Imagens meramentes conceituas, não representão a interface final``` 
+
 ### BP-01: Visualizar Medições Recentes por Município (13 pts)
 *Pesquisa por município e cards com as medições retornadas pela ANA.*
 
