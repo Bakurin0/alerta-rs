@@ -17,9 +17,10 @@ O sistema consulta dados de telemetria fluviométrica e pluviométrica em APIs e
 
 ## 📡 Fontes de Dados Planejadas
 
-- **Fonte principal:** API HidroWebService da Agência Nacional de Águas e Saneamento Básico (ANA), que oferece inventário e séries de chuva, nível e vazão.
+- **Fonte principal:** API de Dados Hidrometeorológicos da Defesa Civil RS, que oferece estações, níveis de rios, chuva acumulada e histórico.
 - **Fonte cartográfica:** API de Malhas do IBGE.
-- **Estado atual:** a aplicação usa dados simulados explicitamente identificados. A integração depende de solicitação de credenciais e validação do contrato com a ANA.
+- **Fonte alternativa:** API HidroWebService da ANA.
+- **Estado atual:** a aplicação usa dados simulados explicitamente identificados. O adaptador da Defesa Civil RS será integrado posteriormente.
 
 Consulte [docs/arquitetura-e-dados.md](docs/arquitetura-e-dados.md) para o mapeamento técnico e os riscos conhecidos.
 
@@ -33,7 +34,7 @@ O acompanhamento do que já foi implementado e do que ainda depende da equipe ou
 | :--- | :--- | :--- |
 | `[Integrante 1]` | **Product Owner** | Visão do produto, gestão do Backlog e validação das informações exibidas |
 | `[Integrante 2]` | **Scrum Master** | Facilitação do processo Scrum, dailies e remoção de impedimentos |
-| `[Integrante 3]` | **Desenvolvedor** | Integração da API HidroWebService/ANA |
+| `[Integrante 3]` | **Desenvolvedor** | Integração da API GraphQL da Defesa Civil RS |
 | `[Integrante 4]` | **Desenvolvedor** | Engenharia dos componentes de cards, medidores e gráficos de séries temporais |
 | `[Integrante 5]` | **Desenvolvedor** | Integração da malha do IBGE, filtros e painel de detalhes |
 
@@ -68,7 +69,7 @@ O acompanhamento do que já foi implementado e do que ainda depende da equipe ou
 ## 🎨 Protótipos de Interface (Sprint 1)
 
 ### BP-01: Visualizar Medições Recentes por Município (13 pts)
-*Pesquisa por município e cards com as medições retornadas pela ANA.*
+*Pesquisa por município e cards com as medições retornadas pela Defesa Civil RS.*
 
 ![Protótipo BP-01](prototipos-ia-temporarios/bp01_nivel_rios.jpg)
 

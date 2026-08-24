@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { ALERT_LEVELS, filterStations } from './domain/station.js'
-import { mockHydrologyRepository } from './services/hydrologyRepository.js'
+import { hydrologyRepository } from './services/hydrologyRepository.js'
 import { mockRainfall, mockWeatherStation } from './data/mockRainfall.js'
 import { mockMapPoints } from './data/mockMapPoints.js'
 
@@ -82,7 +82,7 @@ function MapView() {
 export default function App() {
   const [view, setView] = useState('rivers')
   const [stations, setStations] = useState([])
-  useEffect(() => { mockHydrologyRepository.listStations().then(setStations) }, [])
+  useEffect(() => { hydrologyRepository.listStations().then(setStations) }, [])
   return <div className="app-shell"><header className="topbar"><a className="brand" href="#">Alerta<span>RS</span></a><nav aria-label="Navegação principal">{views.map((item) => <button className={view === item.id ? 'active' : ''} key={item.id} onClick={() => setView(item.id)}>{item.label}</button>)}</nav></header>
     <main>{view === 'rivers' && <RiversView stations={stations} />}{view === 'rain' && <RainView />}{view === 'map' && <MapView />}</main>
     <footer>AlertaRS · Monitoramento hidrológico e climático do Rio Grande do Sul</footer></div>

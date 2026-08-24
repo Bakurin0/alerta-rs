@@ -3,62 +3,47 @@
 ## Decisões
 
 - O AlertaRS não terá banco de dados.
-- Todas as informações da versão final serão obtidas de APIs.
-- A aplicação apenas consultará, filtrará e apresentará os dados recebidos.
+- A versão final deverá consultar dados por APIs.
+- Nesta etapa, o frontend usa somente mocks locais.
+- O mock segue o mesmo formato de dados que será usado pelo adaptador da API.
 
-## APIs selecionadas
+## Fonte principal planejada: Defesa Civil RS
 
-### ANA — HidroWebService
+A API da Rede Hidrometeorológica da Defesa Civil RS é a fonte principal planejada porque é específica do estado e possui documentação pública GraphQL.
 
-Fonte principal para inventário de estações, localização, município, rio, bacia, nível, chuva, vazão e séries históricas.
+- Documentação: [API de Dados Hidrometeorológicos](https://sistemas.defesacivil.rs.gov.br/api-redehidrometeorologica)
+- Endpoint: https://redehidrometeorologica.defesacivil.rs.gov.br/graphql
 
-- [Swagger HidroWebService](https://www.ana.gov.br/hidrowebservice/swagger-ui/index.html)
-- [Manual oficial](https://www.gov.br/ana/pt-br/assuntos/monitoramento-e-eventos-criticos/monitoramento-hidrologico/orientacoes-manuais/manuais/manual-hidrowebservice_publica.pdf/view)
+Ela fornece estações e coordenadas, município, região e bacia, nível do rio e tendência, chuva acumulada em várias janelas, data/hora da leitura, histórico por período e atualizações em tempo real por Subscription WebSocket.
 
-| Necessidade | Operação da ANA |
-|---|---|
-| Listar estações do RS | \`HidroInventarioEstacoes\` |
-| Obter leituras recentes | \`HidroinfoanaSerieTelemetricaAdotada\` |
-| Consultar chuva histórica | \`HidroSerieChuva\` |
-| Consultar níveis históricos | \`HidroSerieCotas\` |
-| Listar municípios e bacias | \`HidroMunicipio\`, \`HidroBacia\` e \`HidroSubBacia\` |
+## Fonte cartográfica
 
-O acesso depende de credenciais solicitadas à ANA. Algumas consultas limitam o período por requisição.
+A API de Malhas do IBGE será usada somente para o contorno geográfico do Rio Grande do Sul:
 
-### IBGE — API de Malhas
+    GET https://servicodados.ibge.gov.br/api/v3/malhas/estados/43
+        ?formato=application/vnd.geo+json
+        &qualidade=minima
 
-Fonte do contorno do Rio Grande do Sul:
+## Fonte alternativa
 
-\`\`\`text
-GET https://servicodados.ibge.gov.br/api/v3/malhas/estados/43
-    ?formato=application/vnd.geo+json
-    &qualidade=minima
-\`\`\`
+A API HidroWebService da ANA permanece como alternativa para ampliar a cobertura ou consultar séries históricas específicas. Ela não será a integração principal neste momento.
 
-## Funcionamento
+## Arquitetura atual
 
-\`\`\`text
-API ANA ───→ aplicação React ───→ listas, indicadores e gráficos
-API IBGE ──→ aplicação React ───→ mapa do RS
-\`\`\`
+    Telas React → hydrologyRepository → mock local
+                                          ↓ futuro
+                                  adaptador Defesa Civil RS
 
-Não haverá banco, importação permanente ou sincronização em segundo plano. Durante o desenvolvimento, mocks poderão ser usados somente para construir a interface.
-
-## Funcionalidades removidas
-
-Não foi encontrada uma API pública documentada com alertas da Defesa Civil do RS e cotas oficiais por estação. Foram retirados:
-
-- mapa de alertas ativos;
-- classificação oficial Normal/Atenção/Alerta/Inundação;
-- histórico de alertas da Defesa Civil;
-- mensagens de evacuação;
-- cálculo de risco com limites não fornecidos pelas APIs.
-
-O produto apresentará medições hidrológicas e não afirmará emitir alertas oficiais.
+O aplicativo não chama nenhuma API atualmente. A troca futura deverá ocorrer somente no repositório, mantendo os componentes independentes da origem dos dados.
 
 ## Limites
 
-- a aplicação depende da disponibilidade das APIs;
-- não haverá histórico próprio além do retornado pela ANA;
-- contas, favoritos e notificações ficam fora do escopo;
-- a equipe precisa validar as credenciais e a cobertura da ANA antes de avançar.
+- os valores exibidos agora são fictícios;
+- não há alertas oficiais nem classificação por severidade;
+- o projeto não emite avisos de emergência;
+- não há banco, persistência ou sincronização própria;
+- o adaptador real será implementado somente após a validação da API.
+
+## Verificação antes da integração
+
+Antes de trocar o mock pela API, a equipe deverá confirmar as condições de uso acadêmico da Defesa Civil RS, testar o CORS no ambiente de desenvolvimento e tratar estações sem nível ou chuva disponíveis.
