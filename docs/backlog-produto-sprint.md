@@ -28,4 +28,4 @@ Os itens “Histórico de chuvas” e “Filtro de estações” permanecem no B
 
 ### Fonte de dados prevista
 
-Durante o desenvolvimento serão usados dados mockados. Na versão final, os dados poderão ser consultados pela [API de Dados Hidrometeorológicos da Defesa Civil RS](https://sistemas.defesacivil.rs.gov.br/api-redehidrometeorologica). Não será utilizado banco de dados próprio.
+As funcionalidades serão desenvolvidas com dados oficiais consultados pela [API de Dados Hidrometeorológicos da Defesa Civil RS](https://sistemas.defesacivil.rs.gov.br/api-redehidrometeorologica). Não será utilizado banco de dados próprio.

@@ -14,7 +14,7 @@ O backlog com pontuação e o detalhamento da Sprint estão em [docs/backlog-pro
 
 ## Dados
 
-Durante o desenvolvimento são usados dados mockados. A fonte prevista para uma integração posterior é a [API de Dados Hidrometeorológicos da Defesa Civil RS](https://sistemas.defesacivil.rs.gov.br/api-redehidrometeorologica), sem banco de dados próprio. O mapa pode utilizar a [API de Malhas do IBGE](https://servicodados.ibge.gov.br/api/v3/malhas/estados/43).
+As telas consultarão dados oficiais pela [API de Dados Hidrometeorológicos da Defesa Civil RS](https://sistemas.defesacivil.rs.gov.br/api-redehidrometeorologica), sem banco de dados próprio. O mapa pode utilizar a [API de Malhas do IBGE](https://servicodados.ibge.gov.br/api/v3/malhas/estados/43).
 
 ## Scrum
 

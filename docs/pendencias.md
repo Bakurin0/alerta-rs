@@ -2,7 +2,7 @@
 
 ## Para concluir a Sprint
 
-- substituir ou revisar os dados mockados das três telas;
+- integrar e validar os dados oficiais nas três telas;
 - finalizar o painel de medições atuais;
 - finalizar o mapa de estações;
 - finalizar o painel de detalhes da estação;
@@ -13,6 +13,6 @@
 
 Histórico de chuvas, filtros avançados, comparações, exportação, cadastro de usuários, notificações, previsão do tempo, alertas oficiais e banco de dados próprio.
 
-## Integração posterior
+## Integração de dados
 
-Depois da entrega acadêmica, os mocks poderão ser substituídos pela API da Defesa Civil RS. Essa integração não faz parte do desenvolvimento desta Sprint.
+A API da Defesa Civil RS será a fonte utilizada pelo projeto. É necessário validar os campos retornados, tratar falhas de conexão e indicar a data/hora da última atualização.
