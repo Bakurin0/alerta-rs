@@ -10,10 +10,10 @@ O planejamento cobre os três artefatos centrais da entrega — Product Backlog,
 
 - não haverá banco de dados;
 - a versão final utilizará somente APIs;
-- ANA fornecerá estações e medições hidrológicas;
+- Defesa Civil RS fornecerá estações e medições hidrológicas;
 - IBGE fornecerá a malha do Rio Grande do Sul;
 - alertas oficiais e classificação por severidade foram removidos por falta de API pública documentada;
-- a viabilidade deve ser confirmada obtendo credenciais e testando a cobertura da ANA.
+- a viabilidade deve ser confirmada testando a API GraphQL da Defesa Civil RS e suas condições de uso acadêmico.
 
 ## Situação por item
 
@@ -21,7 +21,7 @@ O planejamento cobre os três artefatos centrais da entrega — Product Backlog,
 |---|---|---|
 | Grupo de 5 a 7 integrantes e papéis Scrum | Pendente | Substituir todos os `[Integrante N]` por nomes reais |
 | Definição, objetivo e benefício social | Atende | Manter |
-| Fonte de dados | Revisado | ANA para medições e IBGE para a malha geográfica |
+| Fonte de dados | Revisado | Defesa Civil RS para medições e IBGE para a malha geográfica |
 | Product Backlog priorizado e estimado | Atende | Confirmar prioridades com o Product Owner |
 | Sprint Backlog | Parcial | Registrar duração/datas da Sprint e capacidade baseada na equipe |
 | Histórias, critérios, protótipos e tarefas | Parcial | Caminhos corrigidos; responsáveis continuam pendentes |
@@ -41,7 +41,7 @@ O planejamento cobre os três artefatos centrais da entrega — Product Backlog,
 - caminhos dos três protótipos corrigidos;
 - estrutura real do repositório corrigida no README;
 - alegação não comprovada de API ClimaRS removida;
-- API HidroWebService/ANA mapeada com riscos e próximos passos;
+- API GraphQL da Defesa Civil RS mapeada com riscos e próximos passos;
 - primeiro incremento funcional criado com dados simulados claramente identificados.
 
 ## Observação de segurança

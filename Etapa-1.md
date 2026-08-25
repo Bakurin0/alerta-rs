@@ -1,113 +1,104 @@
-# Projeto Integrador IV - Etapa 1
-**Universidade de Caxias do Sul (UCS)**  
-**Curso de Bacharelado em Ciência da Computação / Análise e Desenvolvimento de Sistemas**
+# Projeto Integrador IV — Etapa 1
 
----
-
-## 1. Identificação do Grupo e Responsabilidades no Scrum
+## 1. Identificação do grupo
 
 - **Product Owner:** `[Integrante 1]`
 - **Scrum Master:** `[Integrante 2]`
-- **Desenvolvedor 1:** `[Integrante 3]`
-- **Desenvolvedor 2:** `[Integrante 4]`
-- **Desenvolvedor 3:** `[Integrante 5]`
+- **Desenvolvedores:** `[Integrante 3]`, `[Integrante 4]`, `[Integrante 5]`
 
----
+## 2. Definição do projeto e fonte de dados
 
-## 2. Definição do Projeto e Fonte de Dados
+- **Projeto:** AlertaRS — painel de monitoramento hidrológico.
+- **Objetivo:** apresentar, em uma aplicação web, medições atuais de estações hidrometeorológicas do Rio Grande do Sul, sua localização no mapa e os detalhes de uma estação selecionada.
+- **Fonte prevista:** [API de Dados Hidrometeorológicos da Defesa Civil RS](https://sistemas.defesacivil.rs.gov.br/api-redehidrometeorologica).
+- **Mapa:** [API de Malhas do IBGE](https://servicodados.ibge.gov.br/api/v3/malhas/estados/43).
+- **Desenvolvimento:** as três funcionalidades utilizarão dados oficiais consultados pela API; não haverá banco de dados próprio.
 
-- **Nome do Projeto:** AlertaRS – Painel de Monitoramento Hidrológico e Prevenção Climática
-- **Objetivo do Projeto:** Desenvolver uma aplicação web para consultar e apresentar dados hidrológicos do Rio Grande do Sul obtidos por APIs. O sistema permitirá visualizar estações, níveis dos rios e históricos de precipitação por município ou bacia. O projeto terá caráter informativo e não emitirá alertas oficiais.
-- **Fonte de dados principal planejada:**
-  - **Organização / Entidade:** Agência Nacional de Águas e Saneamento Básico (ANA), por meio da Rede Hidrometeorológica Nacional.
-  - **Serviço:** [API HidroWebService](https://www.ana.gov.br/hidrowebservice/swagger-ui/index.html), com inventário de estações e séries telemétricas de chuva, nível e vazão.
-  - **Condição de acesso:** a equipe deverá solicitar credenciais à ANA antes da integração e respeitar os limites de período descritos no manual do serviço.
-- **Fonte cartográfica:** API de Malhas do IBGE, utilizada para obter o contorno geográfico do Rio Grande do Sul.
-- **Estratégia para a Sprint 1:** utilizar dados simulados apenas durante a construção da interface e validar o acesso às APIs. A versão final consultará as fontes diretamente e não utilizará banco de dados.
+## 3. Backlog do Produto
 
----
+O backlog completo do produto possui cinco necessidades, conforme [docs/backlog-produto-sprint.md](docs/backlog-produto-sprint.md). As duas últimas são necessidades identificadas, mas não fazem parte do desenvolvimento deste trabalho.
 
-## 3. Artefato 1: Backlog do Produto (Product Backlog)
+1. **Painel de medições atuais** — 13 pontos.
+2. **Mapa de estações** — 13 pontos.
+3. **Detalhes da estação** — 8 pontos.
+4. **Histórico de chuvas** — 8 pontos.
+5. **Filtro de estações** — 5 pontos.
 
-Abaixo encontra-se a lista de todas as 8 necessidades do usuário priorizadas e pontuadas em Story Points (estimativa por Planning Poker):
+**Total: 47 pontos.**
 
-| # | Necessidade do Usuário / Funcionalidade | Pontuação (Story Points) | Status |
-| :---: | :--- | :---: | :---: |
-| **BP-01** | **Visualizar medições recentes por município** — O usuário seleciona um município e consulta níveis, chuva e vazão disponíveis nas estações da ANA. | **13 pts** | **Sprint 1** |
-| **BP-02** | **Consultar histórico de chuva acumulada por estação meteorológica** — O usuário filtra por estação e período e visualiza o volume de precipitação acumulada em gráfico de séries temporais. | **8 pts** | **Sprint 1** |
-| **BP-03** | **Visualizar mapa de estações hidrológicas** — Exibe a malha do RS fornecida pelo IBGE e posiciona as estações retornadas pela ANA. | **13 pts** | **Sprint 1** |
-| **BP-04** | **Consultar histórico de níveis dos rios** — O usuário seleciona uma estação e um período e visualiza a série de cotas disponível na ANA. | **8 pts** | Backlog futuro |
-| **BP-05** | **Comparar municípios por indicadores hidrológicos** — O usuário seleciona até 3 municípios e visualiza um painel comparativo com nível do rio, chuva acumulada e status de alerta lado a lado. | **8 pts** | Backlog futuro |
-| **BP-06** | **Exibir resumo das estações consultadas** — Visão geral com quantidade de estações e médias calculadas sobre os dados retornados pela API. | **5 pts** | Backlog futuro |
-| **BP-07** | **Filtrar estações por bacia hidrográfica** — O usuário seleciona uma bacia e visualiza apenas as estações pertencentes a ela, com os dados de nível e chuva correspondentes. | **5 pts** | Backlog futuro |
-| **BP-08** | **Exportar relatório de dados por município e período** — O usuário gera e baixa um arquivo com os dados de nível e precipitação de um município em um intervalo de datas selecionado. | **5 pts** | Backlog futuro |
+## 4. Backlog da Sprint
 
-*Total do Product Backlog: 68 Story Points.*
+Esta Sprint contém as três funcionalidades que serão desenvolvidas e apresentadas no trabalho:
 
----
+1. **Painel de medições atuais** — 13 pontos.
+2. **Mapa de estações** — 13 pontos.
+3. **Detalhes da estação** — 8 pontos.
 
-## 4. Artefato 2: Backlog da Sprint (Sprint Backlog - 1ª Entrega)
+**Total da Sprint: 34 pontos.**
 
-Para o primeiro ciclo de desenvolvimento (Sprint 1), foram priorizados **3 itens do Backlog do Produto**, totalizando uma estimativa de velocidade da equipe de **34 Story Points**.
+## 5. Histórias da Sprint
 
-- **Velocidade Estimada da Equipe:** 34 Story Points / sprint.
+### História 1 — Painel de medições atuais
 
-### Itens Selecionados para a Sprint 1:
-1. **BP-01: Visualizar nível atual de rios e bacias por município (13 pts)** — Funcionalidade de manipulação de telemetria e calculador de cotas.
-2. **BP-02: Consultar histórico de chuva acumulada por estação meteorológica (8 pts)** — Análise temporal pluviométrica.
-3. **BP-03: Visualizar mapa de estações hidrológicas (13 pts)** — Mapa obtido no IBGE com estações retornadas pela ANA.
+**Como** usuário do AlertaRS, **quero** visualizar as medições recentes das estações, **para** acompanhar o nível dos rios e a chuva acumulada.
 
-**Total da Sprint 1:** 34 Story Points.
+**Critérios:** exibir estações, nível, chuva acumulada e horário da medição, identificando a fonte oficial consultada.
 
----
+### História 2 — Mapa de estações
 
-## 5. Artefato 3: Detalhamento das Histórias, Protótipos e Tarefas da Equipe
+**Como** usuário do AlertaRS, **quero** visualizar as estações em um mapa do Rio Grande do Sul, **para** localizar os pontos de monitoramento.
 
-### História 1: BP-01 — Visualizar medições recentes por município (13 pts)
-- **Descrição da História:** *Como morador de um município gaúcho, quero consultar as medições recentes das estações da minha região para acompanhar as condições hidrológicas disponíveis.*
-- **Critérios de Aceitação:**
-  - Exibição de campo de busca por município do RS.
-  - Exibição de cards de estações fluviométricas com medidor de nível em metros.
-  - Exibição da data e hora informadas pela API para cada medição.
-- **Protótipo de Interface (História 1):**
-  ![Protótipo BP-01: Visualizar Nível Atual de Rios por Município](prototipos-ia-temporarios/bp01_nivel_rios.jpg)
-- **Tarefas e Responsabilidades (Scrum):**
-  - `T-01.1`: Definir o contrato do repositório hidrológico e implementar dados simulados; validar o mapeamento para a API HidroWebService/ANA (*Responsável: `[Integrante 3 - Dev]`*).
-  - `T-01.2`: Desenvolver componente de card de estação com medidor visual de cota (*Responsável: `[Integrante 4 - Dev]`*).
-  - `T-01.3`: Implementar campo de busca e filtro por município com retorno dos dados (*Responsável: `[Integrante 5 - Dev]`*).
-  - `T-01.4`: Validar se a fonte e o horário das medições estão visíveis (*Responsável: `[Integrante 1 - PO]`*).
-  - `T-01.5`: Coordenar revisão de progresso nas dailies e remover impedimentos (*Responsável: `[Integrante 2 - SM]`*).
+**Critérios:** exibir o mapa, posicionar os marcadores pelas coordenadas e permitir selecionar uma estação.
 
----
+### História 3 — Detalhes da estação
 
-### História 2: BP-02 — Consultar histórico de chuva acumulada (8 pts)
-- **Descrição da História:** *Como técnico ambiental ou pesquisador, quero visualizar o histórico de precipitação acumulada por estação meteorológica em um período específico para analisar tendências pluviométricas e correlacionar com eventos de cheia.*
-- **Critérios de Aceitação:**
-  - Seletor de estação meteorológica e filtro de período (data início / data fim).
-  - Gráfico de precipitação diária acumulada (mm) em séries temporais.
-  - Exibição do total acumulado e indicador de médias históricas.
-- **Protótipo de Interface (História 2):**
-  ![Protótipo BP-02: Consultar Histórico de Chuva Acumulada](prototipos-ia-temporarios/bp02_historico_chuva.jpg)
-- **Tarefas e Responsabilidades (Scrum):**
-  - `T-02.1`: Modelar séries históricas de precipitação e preparar o adaptador da API HidroWebService/ANA (*Responsável: `[Integrante 3 - Dev]`*).
-  - `T-02.2`: Desenvolver gráfico de séries temporais (precipitação × data) (*Responsável: `[Integrante 4 - Dev]`*).
-  - `T-02.3`: Implementar seletor de estação e filtro de período (data início / data fim) (*Responsável: `[Integrante 5 - Dev]`*).
-  - `T-02.4`: Validar se os dados exibidos correspondem ao período e estação selecionados (*Responsável: `[Integrante 1 - PO]`*).
-  - `T-02.5`: Monitorar prazo de entrega e garantir integração entre frontend e dados (*Responsável: `[Integrante 2 - SM]`*).
+**Como** usuário do AlertaRS, **quero** abrir os detalhes de uma estação, **para** consultar suas medições e identificação.
 
----
+**Critérios:** exibir nome, município, código, nível do rio, chuva acumulada e horário da última atualização.
 
-### História 3: BP-03 — Visualizar mapa de estações hidrológicas (13 pts)
-- **Descrição da História:** *Como cidadão, quero visualizar em um mapa do Rio Grande do Sul as estações hidrológicas disponíveis para localizar os pontos de monitoramento e consultar suas medições.*
-- **Critérios de Aceitação:**
-  - Mapa do RS obtido pela API de Malhas do IBGE.
-  - Marcadores gerados a partir das coordenadas retornadas pela ANA.
-  - Slide-over / modal de detalhamento da estação ao clicar no marcador.
-- **Protótipo de Interface (História 3):**
-  ![Protótipo BP-03: Visualizar Mapa Interativo de Alertas Ativos](prototipos-ia-temporarios/bp03_mapa_alertas.jpg)
-- **Tarefas e Responsabilidades (Scrum):**
-  - `T-03.1`: Integrar biblioteca de mapa (ex.: Leaflet.js) com dados de localização das estações (*Responsável: `[Integrante 3 - Dev]`*).
-  - `T-03.2`: Implementar marcadores a partir das coordenadas das estações (*Responsável: `[Integrante 4 - Dev]`*).
-  - `T-03.3`: Desenvolver painel lateral de detalhe ao selecionar uma estação no mapa (*Responsável: `[Integrante 5 - Dev]`*).
-  - `T-03.4`: Validar a identificação e a procedência das medições exibidas (*Responsável: `[Integrante 1 - PO]`*).
-  - `T-03.5`: Facilitar alinhamento entre desenvolvedores e revisar consistência dos dados no mapa (*Responsável: `[Integrante 2 - SM]`*).
+## 6. Detalhamento das histórias, protótipos e tarefas
+
+### História 1 — Painel de medições atuais
+
+**1. História:** Eu, como usuário do AlertaRS, gostaria de visualizar as medições atuais das estações, para acompanhar o nível dos rios e a chuva acumulada.
+
+**2. Backlog da Sprint:** atende à necessidade **Painel de medições atuais** (13 pontos).
+
+**3. Descrição:** o usuário acessa a tela inicial e encontra uma visão resumida das estações monitoradas, com os valores de nível do rio, chuva acumulada e horário da medição.
+
+**4. Tarefas e responsáveis:**
+
+- `[Integrante 3]` (Desenvolvedor): implementar a consulta à API e transformar o retorno nas informações de estação utilizadas pela tela.
+- `[Integrante 4]` (Desenvolvedor): desenvolver os cards do painel, exibindo nível do rio, chuva acumulada e horário da medição.
+
+**5. Protótipo:** [bp01_nivel_rios.jpg](../prototipos-ia-temporarios/bp01_nivel_rios.jpg), usado como referência para os cards e a apresentação das medições.
+
+### História 2 — Mapa de estações
+
+**1. História:** Eu, como usuário do AlertaRS, gostaria de visualizar as estações em um mapa do Rio Grande do Sul, para localizar os pontos de monitoramento.
+
+**2. Backlog da Sprint:** atende à necessidade **Mapa de estações** (13 pontos).
+
+**3. Descrição:** o usuário visualiza o mapa do estado com marcadores que representam as estações disponíveis e pode selecionar um marcador para consultar a estação.
+
+**4. Tarefas e responsáveis:**
+
+- `[Integrante 4]` (Desenvolvedor): desenvolver o mapa do Rio Grande do Sul e posicionar os marcadores usando latitude e longitude das estações.
+- `[Integrante 5]` (Desenvolvedor): implementar o clique nos marcadores e encaminhar a estação selecionada para o painel de detalhes.
+
+**5. Protótipo:** [bp03_mapa_alertas.jpg](../prototipos-ia-temporarios/bp03_mapa_alertas.jpg), usado como referência visual para o mapa e os marcadores.
+
+### História 3 — Detalhes da estação
+
+**1. História:** Eu, como usuário do AlertaRS, gostaria de abrir os detalhes de uma estação, para consultar suas medições e sua identificação.
+
+**2. Backlog da Sprint:** atende à necessidade **Detalhes da estação** (8 pontos).
+
+**3. Descrição:** após selecionar uma estação no painel ou no mapa, o usuário visualiza seu nome, município, código, nível do rio, chuva acumulada e horário da última atualização.
+
+**4. Tarefas e responsáveis:**
+
+- `[Integrante 3]` (Desenvolvedor): mapear os campos da estação selecionada e preparar os dados para exibição.
+- `[Integrante 5]` (Desenvolvedor): desenvolver o painel de detalhes e conectá-lo à seleção feita no mapa ou no painel inicial.
+
+**5. Protótipo:** o painel lateral de [bp03_mapa_alertas.jpg](../prototipos-ia-temporarios/bp03_mapa_alertas.jpg) serve como referência para os detalhes da estação. A tela será ajustada para mostrar dados hidrometeorológicos, sem exibir códigos “BP” no aplicativo.

@@ -1,26 +1,28 @@
 # AlertaRS
 
-**Painel de Monitoramento Hidrológico e Prevenção Climática do Rio Grande do Sul**
+Aplicação web estudantil para apresentação de dados hidrometeorológicos do Rio Grande do Sul.
 
-> **Projeto Integrador IV** — Universidade de Caxias do Sul (UCS)  
-> Curso de Análise e Desenvolvimento de Sistemas / Ciência da Computação
+## Escopo do trabalho
 
----
+O projeto será desenvolvido somente com estas três funcionalidades:
 
-## 📌 Sobre o Projeto
+1. Painel de medições atuais;
+2. Mapa de estações;
+3. Detalhes da estação.
 
-O **AlertaRS** é uma aplicação web voltada ao monitoramento em tempo real e análise histórica das condições hidrológicas e meteorológicas dos municípios e bacias hidrográficas do Estado do Rio Grande do Sul. 
+O backlog com pontuação e o detalhamento da Sprint estão em [docs/backlog-produto-sprint.md](docs/backlog-produto-sprint.md). A documentação acadêmica está em [Etapa-1.md](Etapa-1.md).
 
-O sistema consulta dados de telemetria fluviométrica e pluviométrica em APIs e apresenta níveis dos rios, chuva acumulada, séries históricas e a localização das estações. O AlertaRS tem caráter informativo e não emite alertas oficiais.
+## Dados
 
----
+As telas consultarão dados oficiais pela [API de Dados Hidrometeorológicos da Defesa Civil RS](https://sistemas.defesacivil.rs.gov.br/api-redehidrometeorologica), sem banco de dados próprio. O mapa pode utilizar a [API de Malhas do IBGE](https://servicodados.ibge.gov.br/api/v3/malhas/estados/43).
 
-## 📡 Fontes de Dados Planejadas
+## Scrum
 
-- **Fonte principal:** API HidroWebService da Agência Nacional de Águas e Saneamento Básico (ANA), que oferece inventário e séries de chuva, nível e vazão.
-- **Fonte cartográfica:** API de Malhas do IBGE.
-- **Estado atual:** a aplicação usa dados simulados explicitamente identificados. A integração depende de solicitação de credenciais e validação do contrato com a ANA.
+- `[Integrante 1]` — Product Owner
+- `[Integrante 2]` — Scrum Master
+- `[Integrante 3]`, `[Integrante 4]`, `[Integrante 5]` — Desenvolvimento
 
+## Executar
 Consulte [docs/arquitetura-e-dados.md](docs/arquitetura-e-dados.md) para o mapeamento técnico e os riscos conhecidos.
 
 O acompanhamento do que já foi implementado e do que ainda depende da equipe ou de serviços externos está em [docs/pendencias.md](docs/pendencias.md).
@@ -108,5 +110,3 @@ cd app
 npm install
 npm run dev
 ```
-
-Os valores exibidos são fictícios e servem apenas para validar a experiência e as regras do sistema.

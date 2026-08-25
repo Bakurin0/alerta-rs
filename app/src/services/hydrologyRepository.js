@@ -1,9 +1,9 @@
 import { mockStations } from '../data/mockStations.js'
 import { normalizeStation } from '../domain/station.js'
 
-// Contrato único consumido pela interface. O adaptador da ANA substituirá apenas
-// esta implementação; componentes e regras de classificação permanecem iguais.
-export const mockHydrologyRepository = {
+// Mock local. O formato da estação representa os campos que a API da Defesa
+// Civil RS entrega; nenhuma requisição externa é feita nesta etapa.
+export const hydrologyRepository = {
   async listStations() {
     return mockStations.map(normalizeStation)
   },
