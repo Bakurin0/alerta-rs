@@ -309,6 +309,7 @@ footer {
   justify-content: space-between;
   align-items: end;
   gap: 32px;
+  padding-bottom: 20px;
 }
 .module-heading h1 { 
   margin: 8px 0 0;
