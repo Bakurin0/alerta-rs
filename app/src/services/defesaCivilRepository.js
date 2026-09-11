@@ -45,6 +45,8 @@ const valueOf = (field) => {
 
 function normalizeStation(item) {
   const name = item.name?.general?.trim() || item.name?.local?.trim() || item.codigo
+  const level = valueOf(item.data?.rio?.rio_nivel)
+  const rainfall24h = valueOf(item.data?.chuva?.acumulado?.h024)
   return {
     id: item.codigo,
     name,
@@ -54,15 +56,17 @@ function normalizeStation(item) {
     latitude: Number(item.position?.latitude),
     longitude: Number(item.position?.longitude),
     measuredAt: item.timestamp,
-    level: valueOf(item.data?.rio?.rio_nivel),
+    level,
+    currentLevel: level ?? 0,
     trend: valueOf(item.data?.rio?.rio_nivel_tendencia),
     river: item.data?.rio?.rio_nome?.value || null,
+    rainfall24h: rainfall24h ?? 0,
     rainfall: {
       h1: valueOf(item.data?.chuva?.acumulado?.h001),
       h3: valueOf(item.data?.chuva?.acumulado?.h003),
       h6: valueOf(item.data?.chuva?.acumulado?.h006),
       h12: valueOf(item.data?.chuva?.acumulado?.h012),
-      h24: valueOf(item.data?.chuva?.acumulado?.h024),
+      h24: rainfall24h,
       h168: valueOf(item.data?.chuva?.acumulado?.h168),
     },
     hasLevel: Boolean(item.filter?.relacao?.tem_nivel_do_rio),

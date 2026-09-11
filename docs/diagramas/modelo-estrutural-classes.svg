@@ -1,0 +1,130 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 620" width="960" height="620" style="background:#ffffff; font-family: 'Segoe UI', Arial, sans-serif;">
+  <defs>
+    <style>
+      .class-box { fill: #f8fafc; stroke: #1e293b; stroke-width: 1.5; rx: 6; }
+      .class-header { fill: #0f766e; }
+      .header-text { fill: #ffffff; font-weight: bold; font-size: 14px; text-anchor: middle; }
+      .stereo-text { fill: #ccfbf1; font-style: italic; font-size: 11px; text-anchor: middle; }
+      .member-text { fill: #0f172a; font-size: 12px; font-family: 'Consolas', 'Courier New', monospace; }
+      .divider { stroke: #cbd5e1; stroke-width: 1; }
+      .assoc-line { stroke: #334155; stroke-width: 1.5; fill: none; }
+      .dep-line { stroke: #0284c7; stroke-width: 1.5; stroke-dasharray: 4,4; fill: none; }
+      .label-text { fill: #475569; font-size: 11px; }
+      .diamond { fill: #1e293b; stroke: #1e293b; }
+      .arrowhead { fill: #334155; }
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#0284c7" />
+    </marker>
+    <marker id="closed-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <polygon points="0 0, 10 5, 0 10" fill="#334155" />
+    </marker>
+  </defs>
+
+  <!-- Title -->
+  <text x="480" y="32" text-anchor="middle" font-size="18" font-weight="bold" fill="#0f172a">Diagrama de Classes UML — Modelo Estrutural da Sprint</text>
+  <text x="480" y="50" text-anchor="middle" font-size="12" fill="#64748b">AlertaRS: Sistema de Monitoramento Hidrometeorológico</text>
+
+  <!-- Estacao Class -->
+  <g transform="translate(40, 90)">
+    <rect width="360" height="350" class="class-box" />
+    <path d="M 0 0 h 360 v 42 h -360 z" class="class-header" />
+    <text x="180" y="18" class="stereo-text">&lt;&lt;entity&gt;&gt;</text>
+    <text x="180" y="34" class="header-text">Estacao / Station</text>
+    <line x1="0" y1="42" x2="360" y2="42" class="divider" />
+    
+    <!-- Attributes -->
+    <text x="15" y="64" class="member-text">+ id: String</text>
+    <text x="15" y="82" class="member-text">+ name: String</text>
+    <text x="15" y="100" class="member-text">+ city: String</text>
+    <text x="15" y="118" class="member-text">+ basin: String</text>
+    <text x="15" y="136" class="member-text">+ region: String</text>
+    <text x="15" y="154" class="member-text">+ latitude: Float</text>
+    <text x="15" y="172" class="member-text">+ longitude: Float</text>
+    <text x="15" y="190" class="member-text">+ measuredAt: DateTime</text>
+    <text x="15" y="208" class="member-text">+ currentLevel: Float</text>
+    <text x="15" y="226" class="member-text">+ trend: Float</text>
+    <text x="15" y="244" class="member-text">+ rainfall24h: Float</text>
+    <text x="15" y="262" class="member-text">+ status: String [normal, alert, flood]</text>
+    <text x="15" y="280" class="member-text">+ statusLabel: String</text>
+    
+    <line x1="0" y1="292" x2="360" y2="292" class="divider" />
+    <!-- Methods -->
+    <text x="15" y="312" class="member-text">+ classifyLevel(level, thresholds): String</text>
+    <text x="15" y="330" class="member-text">+ projectCoordinates(lat, lon): Point</text>
+  </g>
+
+  <!-- MedicaoNivel Class -->
+  <g transform="translate(460, 90)">
+    <rect width="240" height="160" class="class-box" />
+    <path d="M 0 0 h 240 v 38 h -240 z" style="fill: #1e3a8a;" />
+    <text x="120" y="16" class="stereo-text">&lt;&lt;value object&gt;&gt;</text>
+    <text x="120" y="31" class="header-text">MedicaoNivel</text>
+    <line x1="0" y1="38" x2="240" y2="38" class="divider" />
+    <text x="12" y="58" class="member-text">+ currentLevel: Float</text>
+    <text x="12" y="76" class="member-text">+ trend: Float</text>
+    <text x="12" y="94" class="member-text">+ river: String</text>
+    <text x="12" y="112" class="member-text">+ measuredAt: DateTime</text>
+    <line x1="0" y1="122" x2="240" y2="122" class="divider" />
+    <text x="12" y="142" class="member-text">+ getDeltaTendencia(): Float</text>
+  </g>
+
+  <!-- ChuvaAcumulada Class -->
+  <g transform="translate(460, 280)">
+    <rect width="240" height="160" class="class-box" />
+    <path d="M 0 0 h 240 v 38 h -240 z" style="fill: #1e3a8a;" />
+    <text x="120" y="16" class="stereo-text">&lt;&lt;value object&gt;&gt;</text>
+    <text x="120" y="31" class="header-text">ChuvaAcumulada</text>
+    <line x1="0" y1="38" x2="240" y2="38" class="divider" />
+    <text x="12" y="58" class="member-text">+ h1: Float</text>
+    <text x="12" y="76" class="member-text">+ h3: Float</text>
+    <text x="12" y="94" class="member-text">+ h6: Float</text>
+    <text x="12" y="112" class="member-text">+ h12: Float</text>
+    <text x="12" y="130" class="member-text">+ h24: Float</text>
+    <text x="12" y="148" class="member-text">+ h168: Float</text>
+  </g>
+
+  <!-- Composition Lines -->
+  <!-- Estacao to MedicaoNivel -->
+  <path d="M 400 170 L 460 170" class="assoc-line" />
+  <polygon points="400,170 410,165 420,170 410,175" class="diamond" />
+  <text x="425" y="165" class="label-text">1</text>
+  <text x="445" y="165" class="label-text">1</text>
+
+  <!-- Estacao to ChuvaAcumulada -->
+  <path d="M 400 360 L 460 360" class="assoc-line" />
+  <polygon points="400,360 410,355 420,360 410,365" class="diamond" />
+  <text x="425" y="355" class="label-text">1</text>
+  <text x="445" y="355" class="label-text">1</text>
+
+  <!-- HydrologyRepository -->
+  <g transform="translate(40, 480)">
+    <rect width="360" height="100" class="class-box" />
+    <path d="M 0 0 h 360 v 34 h -360 z" style="fill: #0369a1;" />
+    <text x="180" y="14" class="stereo-text">&lt;&lt;repository&gt;&gt;</text>
+    <text x="180" y="28" class="header-text">HydrologyRepository</text>
+    <line x1="0" y1="34" x2="360" y2="34" class="divider" />
+    <text x="15" y="58" class="member-text">+ isLive: Boolean</text>
+    <text x="15" y="78" class="member-text">+ listStations(): Promise&lt;Estacao[]&gt;</text>
+  </g>
+
+  <!-- DefesaCivilRepository -->
+  <g transform="translate(460, 480)">
+    <rect width="460" height="115" class="class-box" />
+    <path d="M 0 0 h 460 v 34 h -460 z" style="fill: #b45309;" />
+    <text x="230" y="14" class="stereo-text">&lt;&lt;remote adapter&gt;&gt;</text>
+    <text x="230" y="28" class="header-text">DefesaCivilRepository (GraphQL)</text>
+    <line x1="0" y1="34" x2="460" y2="34" class="divider" />
+    <text x="15" y="56" class="member-text">- ENDPOINT: String = &quot;.../graphql&quot;</text>
+    <text x="15" y="74" class="member-text">+ listStations(): Promise&lt;Estacao[]&gt;</text>
+    <text x="15" y="94" class="member-text">- normalizeStation(rawItem): Estacao</text>
+  </g>
+
+  <!-- Dependencies -->
+  <path d="M 220 480 L 220 440" class="dep-line" marker-end="url(#arrow)" />
+  <path d="M 400 530 L 460 530" class="dep-line" marker-end="url(#arrow)" />
+  <path d="M 690 480 L 690 440 L 400 400" class="dep-line" marker-end="url(#arrow)" />
+  <text x="225" y="465" class="label-text">fornece</text>
+  <text x="415" y="522" class="label-text">delega</text>
+  <text x="630" y="460" class="label-text">mapeia p/</text>
+</svg>

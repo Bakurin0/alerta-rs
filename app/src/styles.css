@@ -1097,3 +1097,29 @@ button:active { transform: translateY(1px); }
   .mock-map { min-height: 430px; }
   .river-footer { align-items: flex-start; flex-direction: column; }
 }
+
+.source-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(82, 214, 183, 0.12);
+  border: 1px solid rgba(82, 214, 183, 0.35);
+  color: #52d6b7;
+  font-size: 0.78rem;
+  font-weight: 500;
+  padding: 4px 12px;
+  border-radius: 999px;
+}
+.source-badge.mock {
+  background: rgba(238, 125, 119, 0.12);
+  border-color: rgba(238, 125, 119, 0.35);
+  color: #ee7d77;
+}
+.pulse-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: currentColor;
+  box-shadow: 0 0 8px currentColor;
+}
+

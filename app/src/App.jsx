@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { hydrologyRepository } from './services/hydrologyRepository.js'
 import { mockMapPoints } from './data/mockMapPoints.js'
+import { projectCoordinates } from './domain/station.js'
 
 const views = [
   { id: 'panel', label: 'Medições atuais' },
@@ -8,13 +9,22 @@ const views = [
   { id: 'details', label: 'Detalhes da estação' },
 ]
 
-const formatNumber = (value, unit) => `${Number(value).toLocaleString('pt-BR', { minimumFractionDigits: 1 })} ${unit}`
+const formatNumber = (value, unit) => {
+  if (value == null || !Number.isFinite(Number(value))) return '—'
+  return `${Number(value).toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 2 })} ${unit}`
+}
 
-const formatDate = (value) => new Intl.DateTimeFormat('pt-BR', {
-  dateStyle: 'short',
-  timeStyle: 'short',
-}).format(new Date(value))
-
+const formatDate = (value) => {
+  if (!value) return 'Data não disponível'
+  try {
+    return new Intl.DateTimeFormat('pt-BR', {
+      dateStyle: 'short',
+      timeStyle: 'short',
+    }).format(new Date(value))
+  } catch {
+    return String(value)
+  }
+}
 
 function PanelView({ stations, onDetails }) {
   return (
@@ -22,7 +32,7 @@ function PanelView({ stations, onDetails }) {
       <div className="module-heading">
         <div>
           <h1>Medições atuais</h1>
-          <p>Acompanhe as medições recentes das estações hidrometeorológicas.</p>
+          <p>Acompanhe as medições recentes das estações hidrometeorológicas do RS ({stations.length} estações).</p>
         </div>
       </div>
       <div className="river-grid">
@@ -37,7 +47,7 @@ function PanelView({ stations, onDetails }) {
             <p className="station-name">{station.name}</p>
             <div className="reading-copy">
               <strong>{formatNumber(station.currentLevel, 'm')}</strong>
-              <p>Nível atual do rio</p>
+              <p>Nível do rio</p>
               <p>Chuva em 24h: {formatNumber(station.rainfall24h, 'mm')}</p>
             </div>
             <div className="river-footer">
@@ -52,14 +62,14 @@ function PanelView({ stations, onDetails }) {
 }
 
 function MapView({ stations, onDetails }) {
-  const [selected, setSelected] = useState(stations[0])
+  const [selected, setSelected] = useState(stations[0] || null)
 
   return (
     <section className="module">
       <div className="module-heading">
         <div>
           <h1>Mapa de estações</h1>
-          <p>Localize as estações hidrometeorológicas do Rio Grande do Sul.</p>
+          <p>Localize as estações hidrometeorológicas no mapa do Rio Grande do Sul.</p>
         </div>
       </div>
       <div className="map-layout">
@@ -71,26 +81,34 @@ function MapView({ stations, onDetails }) {
           </svg>
           <span className="map-label label-poa">Porto Alegre</span>
           {stations.map((station) => {
-            const point = mockMapPoints.find((item) => item.city === station.city) ?? { x: 50, y: 50 }
+            const point = projectCoordinates(station.latitude, station.longitude)
+              ?? mockMapPoints.find((item) => item.city === station.city)
+              ?? { x: 50, y: 50 }
             return (
-            <button
-              type="button"
-              className={`map-marker ${selected?.id === station.id ? 'selected' : ''}`}
-              style={{ left: `${point.x}%`, top: `${point.y}%` }}
-              key={station.id}
-              onClick={() => setSelected(station)}
-              aria-label={`Selecionar ${station.name}`}
-            />
+              <button
+                type="button"
+                className={`map-marker ${selected?.id === station.id ? 'selected' : ''}`}
+                style={{ left: `${point.x}%`, top: `${point.y}%` }}
+                key={station.id}
+                onClick={() => setSelected(station)}
+                aria-label={`Selecionar ${station.name}`}
+                title={`${station.name} (${station.city})`}
+              />
             )
           })}
         </div>
         <aside className="side-panel selected-station">
           <span className="eyebrow">Estação selecionada</span>
-          <h2>{selected?.city}</h2>
+          <h2>{selected?.city || 'Selecione uma estação'}</h2>
           <p>{selected?.name}</p>
           <strong>{selected && formatNumber(selected.currentLevel, 'm')}</strong>
           <p>Nível atual do rio</p>
-          <button type="button" onClick={() => onDetails(selected)}>Abrir detalhes</button>
+          <p style={{ marginTop: '12px' }}>Chuva em 24h: {selected ? formatNumber(selected.rainfall24h, 'mm') : '—'}</p>
+          {selected && (
+            <button type="button" onClick={() => onDetails(selected)} style={{ marginTop: '16px' }}>
+              Abrir detalhes
+            </button>
+          )}
         </aside>
       </div>
     </section>
@@ -103,19 +121,23 @@ function DetailsView({ station }) {
       <div className="module-heading">
         <div>
           <h1>Detalhes da estação</h1>
-          <p>Informações da estação selecionada.</p>
+          <p>Informações consolidadas da estação hidrometeorológica.</p>
         </div>
       </div>
       <article className="side-panel details-page">
         <span className="eyebrow">Estação hidrometeorológica</span>
         <h2>{station.name}</h2>
         <dl className="details">
-          <div><dt>Município</dt><dd>{station.city}</dd></div>
-          <div><dt>Código</dt><dd>{station.id}</dd></div>
-          <div><dt>Bacia</dt><dd>{station.basin}</dd></div>
-          <div><dt>Nível do rio</dt><dd>{formatNumber(station.currentLevel, 'm')}</dd></div>
-          <div><dt>Chuva acumulada em 24h</dt><dd>{formatNumber(station.rainfall24h, 'mm')}</dd></div>
-          <div><dt>Última medição</dt><dd>{formatDate(station.measuredAt)}</dd></div>
+          <div><dt>Município</dt><dd>{station.city || '—'}</dd></div>
+          <div><dt>Código da Estação</dt><dd>{station.id}</dd></div>
+          <div><dt>Bacia Hidrográfica</dt><dd>{station.basin || '—'}</dd></div>
+          <div><dt>Região</dt><dd>{station.region || '—'}</dd></div>
+          <div><dt>Nível do Rio</dt><dd>{formatNumber(station.currentLevel, 'm')}</dd></div>
+          <div><dt>Chuva Acumulada (24h)</dt><dd>{formatNumber(station.rainfall24h, 'mm')}</dd></div>
+          <div><dt>Chuva Acumulada (1h / 3h)</dt><dd>{formatNumber(station.rainfall?.h1, 'mm')} / {formatNumber(station.rainfall?.h3, 'mm')}</dd></div>
+          <div><dt>Chuva Acumulada (6h / 12h)</dt><dd>{formatNumber(station.rainfall?.h6, 'mm')} / {formatNumber(station.rainfall?.h12, 'mm')}</dd></div>
+          <div><dt>Situação / Cota</dt><dd>{station.statusLabel || 'Normal'}</dd></div>
+          <div><dt>Última Medição</dt><dd>{formatDate(station.measuredAt)}</dd></div>
         </dl>
       </article>
     </section>
@@ -126,11 +148,19 @@ export default function App() {
   const [view, setView] = useState('panel')
   const [stations, setStations] = useState([])
   const [selected, setSelected] = useState(null)
+  const [dataSource, setDataSource] = useState('Carregando dados...')
+  const [isLive, setIsLive] = useState(false)
 
   useEffect(() => {
     hydrologyRepository.listStations().then((items) => {
       setStations(items)
-      setSelected(items[0])
+      setSelected(items[0] || null)
+      setDataSource(items.source || 'API Oficial Defesa Civil RS')
+      setIsLive(Boolean(items.isLive))
+    }).catch((err) => {
+      console.error('Erro ao carregar estações:', err)
+      setDataSource('Dados de Demonstração (Mock)')
+      setIsLive(false)
     })
   }, [])
 
@@ -143,20 +173,27 @@ export default function App() {
     <div className="app-shell">
       <header className="topbar">
         <a className="brand" href="#">Alerta<span>RS</span></a>
-        <nav aria-label="Navegação principal">
-          {views.map((item) => (
-            <button className={view === item.id ? 'active' : ''} key={item.id} onClick={() => setView(item.id)}>
-              {item.label}
-            </button>
-          ))}
-        </nav>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <span className={`source-badge ${isLive ? 'live' : 'mock'}`}>
+            <span className="pulse-dot" />
+            {dataSource}
+          </span>
+          <nav aria-label="Navegação principal">
+            {views.map((item) => (
+              <button className={view === item.id ? 'active' : ''} key={item.id} onClick={() => setView(item.id)}>
+                {item.label}
+              </button>
+            ))}
+          </nav>
+        </div>
       </header>
       <main>
         {view === 'panel' && <PanelView stations={stations} onDetails={openDetails} />}
         {view === 'map' && <MapView stations={stations} onDetails={openDetails} />}
         {view === 'details' && selected && <DetailsView station={selected} />}
       </main>
-      <footer>AlertaRS · Monitoramento hidrológico do Rio Grande do Sul</footer>
+      <footer>AlertaRS · Monitoramento hidrológico do Rio Grande do Sul · {dataSource}</footer>
     </div>
   )
 }
+

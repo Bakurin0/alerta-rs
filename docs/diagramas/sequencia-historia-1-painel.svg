@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 520" width="900" height="520" style="background:#ffffff; font-family: 'Segoe UI', Arial, sans-serif;">
+  <defs>
+    <style>
+      .title { font-size: 16px; font-weight: bold; fill: #0f172a; text-anchor: middle; }
+      .subtitle { font-size: 12px; fill: #64748b; text-anchor: middle; }
+      .participant-box { fill: #f1f5f9; stroke: #334155; stroke-width: 1.5; rx: 4; }
+      .participant-text { font-size: 13px; font-weight: 600; fill: #1e293b; text-anchor: middle; }
+      .lifeline { stroke: #94a3b8; stroke-width: 1.5; stroke-dasharray: 4,4; }
+      .msg-line { stroke: #0f766e; stroke-width: 1.5; fill: none; }
+      .return-line { stroke: #0284c7; stroke-width: 1.5; stroke-dasharray: 4,4; fill: none; }
+      .msg-text { font-size: 11.5px; fill: #0f172a; }
+      .activation { fill: #ccfbf1; stroke: #0f766e; stroke-width: 1.2; }
+      .note-box { fill: #fef9c3; stroke: #ca8a04; stroke-width: 1; rx: 3; }
+      .note-text { font-size: 10.5px; fill: #854d0e; }
+    </style>
+    <marker id="arrow-sync" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <polygon points="0 0, 10 5, 0 10" fill="#0f766e" />
+    </marker>
+    <marker id="arrow-ret" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <polygon points="0 0, 10 5, 0 10" fill="#0284c7" />
+    </marker>
+  </defs>
+
+  <text x="450" y="28" class="title">Diagrama de Sequência — História 1: Painel de Medições Atuais</text>
+  <text x="450" y="46" class="subtitle">Fluxo de inicialização, consulta telemetria e renderização dos cards com cotas e chuva</text>
+
+  <!-- Participants -->
+  <!-- 1: Usuario (100) -->
+  <rect x="30" y="70" width="130" height="36" class="participant-box" />
+  <text x="95" y="93" class="participant-text">:Usuário</text>
+  <line x1="95" y1="106" x2="95" y2="480" class="lifeline" />
+
+  <!-- 2: App UI (280) -->
+  <rect x="220" y="70" width="120" height="36" class="participant-box" />
+  <text x="280" y="93" class="participant-text">:App (React)</text>
+  <line x1="280" y1="106" x2="280" y2="480" class="lifeline" />
+
+  <!-- 3: HydrologyRepository (480) -->
+  <rect x="410" y="70" width="150" height="36" class="participant-box" />
+  <text x="485" y="93" class="participant-text">:HydrologyRepository</text>
+  <line x1="485" y1="106" x2="485" y2="480" class="lifeline" />
+
+  <!-- 4: DefesaCivilRepository (680) -->
+  <rect x="610" y="70" width="160" height="36" class="participant-box" />
+  <text x="690" y="93" class="participant-text">:DefesaCivilRepository</text>
+  <line x1="690" y1="106" x2="690" y2="480" class="lifeline" />
+
+  <!-- 5: API Externa (820) -->
+  <rect x="790" y="70" width="100" height="36" class="participant-box" style="fill:#fed7aa; stroke:#c2410c;" />
+  <text x="840" y="93" class="participant-text" style="fill:#9a3412;">API Defesa Civil</text>
+  <line x1="840" y1="106" x2="840" y2="480" class="lifeline" />
+
+  <!-- Activations -->
+  <rect x="275" y="130" width="10" height="320" class="activation" />
+  <rect x="480" y="150" width="10" height="240" class="activation" />
+  <rect x="685" y="170" width="10" height="180" class="activation" />
+  <rect x="835" y="190" width="10" height="80" class="activation" style="fill:#ffedd5; stroke:#ea580c;" />
+
+  <!-- Messages -->
+  <!-- Msg 1: User -> App -->
+  <path d="M 95 130 L 275 130" class="msg-line" marker-end="url(#arrow-sync)" />
+  <text x="105" y="122" class="msg-text">1: Acessa tela inicial (Visão Medições)</text>
+
+  <!-- Msg 2: App -> HydrologyRepository -->
+  <path d="M 285 150 L 480 150" class="msg-line" marker-end="url(#arrow-sync)" />
+  <text x="295" y="142" class="msg-text">2: listStations() via useEffect()</text>
+
+  <!-- Msg 3: HydrologyRepository -> DefesaCivilRepository -->
+  <path d="M 490 170 L 685 170" class="msg-line" marker-end="url(#arrow-sync)" />
+  <text x="500" y="162" class="msg-text">3: listStations() [Tentativa API oficial]</text>
+
+  <!-- Msg 4: DefesaCivilRepository -> API Defesa Civil -->
+  <path d="M 695 190 L 835 190" class="msg-line" marker-end="url(#arrow-sync)" />
+  <text x="702" y="182" class="msg-text">4: POST /graphql (query StationsRS)</text>
+
+  <!-- Msg 5: API Defesa Civil -> DefesaCivilRepository -->
+  <path d="M 835 270 L 695 270" class="return-line" marker-end="url(#arrow-ret)" />
+  <text x="710" y="262" class="msg-text">5: JSON { tags_data: [ ... ] }</text>
+
+  <!-- Self processing: normalizeStation -->
+  <path d="M 695 295 L 735 295 L 735 315 L 695 315" class="msg-line" marker-end="url(#arrow-sync)" />
+  <text x="740" y="308" class="msg-text">6: normalizeStation() [cota, chuva24h]</text>
+
+  <!-- Msg 7: DefesaCivilRepository -> HydrologyRepository -->
+  <path d="M 685 350 L 490 350" class="return-line" marker-end="url(#arrow-ret)" />
+  <text x="505" y="342" class="msg-text">7: Retorna Estacao[] enriquecido (isLive=true)</text>
+
+  <!-- Note fallback -->
+  <rect x="430" y="365" width="210" height="30" class="note-box" />
+  <text x="435" y="384" class="note-text">Em caso de erro de rede/CORS: fallback mock</text>
+
+  <!-- Msg 8: HydrologyRepository -> App -->
+  <path d="M 480 405 L 285 405" class="return-line" marker-end="url(#arrow-ret)" />
+  <text x="300" y="398" class="msg-text">8: setStations(items) + setDataSource()</text>
+
+  <!-- Msg 9: App -> User -->
+  <path d="M 275 440 L 95 440" class="return-line" marker-end="url(#arrow-ret)" />
+  <text x="110" y="432" class="msg-text">9: Renderiza PanelView com cards de monitoramento</text>
+</svg>
