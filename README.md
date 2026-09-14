@@ -74,21 +74,21 @@ O acompanhamento do que já foi implementado e do que ainda depende da equipe ou
 ### BP-01: Visualizar Medições Recentes por Município (13 pts)
 *Pesquisa por município e cards com as medições retornadas pela ANA.*
 
-![Protótipo BP-01](prototipos-ia-temporarios/tela-inicio.png)
+![Protótipo BP-01](telas/infos.jpeg)
 
 ---
 
 ### BP-02: Consultar Histórico de Chuva Acumulada (8 pts)
 *Seletor de estação meteorológica, intervalo de datas e gráfico de precipitação acumulada.*
 
-![Protótipo BP-02](prototipos-ia-temporarios/historico.png)
+![Protótipo BP-02](telas/home.jpeg)
 
 ---
 
 ### BP-03: Visualizar Mapa de Estações Hidrológicas (13 pts)
 *Mapa do RS obtido no IBGE com estações e painel de detalhamento das medições.*
 
-![Protótipo BP-03](prototipos-ia-temporarios/map.png)
+![Protótipo BP-03](telas/maps.jpeg)
 
 ---
 
