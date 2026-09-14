@@ -21,4 +21,14 @@ export const hydrologyRepository = {
     fallback.isLive = false
     return fallback
   },
+
+  subscribeLiveUpdates(onStationUpdate, onStatusChange) {
+    return defesaCivilRepository.subscribeNowcasting(
+      (station) => {
+        const normalized = normalizeStation(station)
+        onStationUpdate?.(normalized)
+      },
+      onStatusChange,
+    )
+  },
 }
