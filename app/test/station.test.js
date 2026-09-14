@@ -9,6 +9,7 @@ import {
   formatSolarRadiation,
   formatTemperature,
   formatWind,
+  formatRelativeTime,
   normalizeStation,
   projectCoordinates,
 } from '../src/domain/station.js'
@@ -219,4 +220,16 @@ test('filtra por busca de texto e por tipo de sensor', () => {
   const meteoOnly = filterStations(stations, { sensor: 'meteo' })
   assert.equal(meteoOnly.length, 1)
   assert.equal(meteoOnly[0].city, 'Caxias do Sul')
+})
+
+test('formata timestamps relativos em tempo real com precisão', () => {
+  const now = new Date()
+  const justNow = new Date(now.getTime() - 2000).toISOString()
+  const thirtySecsAgo = new Date(now.getTime() - 30000).toISOString()
+  const fiveMinAgo = new Date(now.getTime() - 5 * 60000).toISOString()
+
+  assert.ok(formatRelativeTime(justNow).includes('Agora há pouco'))
+  assert.ok(formatRelativeTime(thirtySecsAgo).includes('Há 30s'))
+  assert.ok(formatRelativeTime(fiveMinAgo).includes('Há 5 min'))
+  assert.equal(formatRelativeTime(null), 'Data não disponível')
 })

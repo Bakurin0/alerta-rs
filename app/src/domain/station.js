@@ -71,16 +71,50 @@ export function formatSolarRadiation(value) {
   return `${Number(value).toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 2 })} kWh/m²`
 }
 
+export function formatRelativeTime(dateString) {
+  if (!dateString) return 'Data não disponível'
+  try {
+    const date = new Date(dateString)
+    if (Number.isNaN(date.getTime())) return String(dateString)
+    const diffSec = Math.max(0, Math.floor((Date.now() - date.getTime()) / 1000))
+    const timeFormatted = new Intl.DateTimeFormat('pt-BR', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    }).format(date)
+    const dateFormatted = new Intl.DateTimeFormat('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    }).format(date)
+
+    if (diffSec < 5) return `Agora há pouco (${timeFormatted})`
+    if (diffSec < 60) return `Há ${diffSec}s (${timeFormatted})`
+    const diffMin = Math.floor(diffSec / 60)
+    if (diffMin < 60) return `Há ${diffMin} min (${timeFormatted})`
+    const diffHour = Math.floor(diffMin / 60)
+    if (diffHour < 24) return `Há ${diffHour}h (${timeFormatted})`
+    return `${dateFormatted}, ${timeFormatted}`
+  } catch {
+    return String(dateString)
+  }
+}
+
 export function normalizeStation(station) {
   const currentLevel = station.currentLevel ?? station.level ?? 0
   const rainfall24h = station.rainfall24h ?? station.rainfall?.h24 ?? 0
   const thresholds = station.thresholds ?? null
   const status = classifyLevel(currentLevel, thresholds)
+  const hasLevel = Boolean(station.hasLevel || station.sensors?.hasRiver || station.level != null || (station.currentLevel != null && station.currentLevel > 0))
+  const hasRainfall = Boolean(station.hasRainfall || station.sensors?.hasRain || rainfall24h > 0)
+
   return {
     ...station,
     currentLevel,
     rainfall24h,
     thresholds,
+    hasLevel,
+    hasRainfall,
     status: station.status || status,
     statusLabel: ALERT_LEVELS[station.status || status]?.label ?? 'Normal',
   }
@@ -93,7 +127,7 @@ export function filterStations(stations, { query = '', city = 'all', status = 'a
     if (status !== 'all' && station.status !== status) return false
 
     if (sensor === 'river') {
-      const hasRiver = station.hasLevel || Boolean(station.sensors?.hasRiver) || station.level != null
+      const hasRiver = station.hasLevel || Boolean(station.sensors?.hasRiver) || station.level != null || (station.currentLevel != null && station.currentLevel > 0)
       if (!hasRiver) return false
     } else if (sensor === 'rain') {
       const hasRain = station.hasRainfall || Boolean(station.sensors?.hasRain) || station.rainfall24h > 0
@@ -115,5 +149,3 @@ export function filterStations(stations, { query = '', city = 'all', status = 'a
     return true
   })
 }
-
-

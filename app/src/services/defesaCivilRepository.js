@@ -252,20 +252,36 @@ export function normalizeStation(item) {
 
 export const defesaCivilRepository = {
   async listStations() {
-    const response = await fetch(HTTP_ENDPOINT, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query: STATIONS_QUERY }),
-    })
+    const isBrowser = typeof window !== 'undefined'
+    const endpoints = isBrowser
+      ? ['/api-defesa-civil/graphql', HTTP_ENDPOINT]
+      : [HTTP_ENDPOINT]
 
-    if (!response.ok) throw new Error(`A API da Defesa Civil RS respondeu com status ${response.status}.`)
-    const payload = await response.json()
-    if (payload.errors?.length) throw new Error(payload.errors[0].message)
+    let lastError = null
+    for (const endpoint of endpoints) {
+      try {
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: STATIONS_QUERY }),
+        })
 
-    return (payload.data?.tags_data?.qualle_meteorologia ?? [])
-      .map(normalizeStation)
-      .filter((station) => Number.isFinite(station.latitude) && Number.isFinite(station.longitude))
-      .sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'))
+        if (!response.ok) continue
+        const payload = await response.json()
+        if (payload.errors?.length) continue
+
+        const stations = (payload.data?.tags_data?.qualle_meteorologia ?? [])
+          .map(normalizeStation)
+          .filter((station) => Number.isFinite(station.latitude) && Number.isFinite(station.longitude))
+          .sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'))
+
+        if (stations.length > 0) return stations
+      } catch (err) {
+        lastError = err
+      }
+    }
+
+    throw lastError || new Error('A API da Defesa Civil RS não pôde ser consultada.')
   },
 
   subscribeNowcasting(onData, onStatusChange) {

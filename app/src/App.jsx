@@ -1,8 +1,8 @@
-import React, { useEffect, useState, useMemo } from 'react'
+import React, { useEffect, useState, useMemo, useCallback, useRef } from 'react'
 import { hydrologyRepository } from './services/hydrologyRepository.js'
-import { mockMapPoints } from './data/mockMapPoints.js'
+import InteractiveMap from './components/InteractiveMap.jsx'
+import FeaturedOverview from './components/FeaturedOverview.jsx'
 import {
-  projectCoordinates,
   filterStations,
   formatTemperature,
   formatWind,
@@ -10,6 +10,7 @@ import {
   formatHumidity,
   formatSolarRadiation,
   degreesToCompass,
+  formatRelativeTime,
 } from './domain/station.js'
 
 const views = [
@@ -19,27 +20,15 @@ const views = [
 ]
 
 const sensorFilterOptions = [
-  { id: 'all', label: 'Todas' },
+  { id: 'all', label: 'Todas as estações' },
   { id: 'river', label: 'Com nível de rio' },
-  { id: 'rain', label: 'Com chuva' },
+  { id: 'rain', label: 'Com pluviômetro' },
   { id: 'meteo', label: 'Meteorologia completa' },
 ]
 
 const formatNumber = (value, unit) => {
   if (value == null || !Number.isFinite(Number(value))) return '—'
   return `${Number(value).toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 2 })} ${unit}`
-}
-
-const formatDate = (value) => {
-  if (!value) return 'Data não disponível'
-  try {
-    return new Intl.DateTimeFormat('pt-BR', {
-      dateStyle: 'short',
-      timeStyle: 'short',
-    }).format(new Date(value))
-  } catch {
-    return String(value)
-  }
 }
 
 function FilterToolbar({
@@ -53,22 +42,26 @@ function FilterToolbar({
   isLoading,
 }) {
   return (
-    <div className="filter-toolbar">
+    <nav className="filter-toolbar" aria-label="Filtros e busca de estações">
       <div className="search-box">
+        <svg className="search-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+          <circle cx="9" cy="9" r="6" />
+          <path d="M13.5 13.5L18 18" />
+        </svg>
         <input
           type="search"
           className="search-input"
-          placeholder="Buscar por município, estação ou rio..."
+          placeholder="Buscar por município, rio, bacia ou código..."
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
-          aria-label="Buscar estações"
+          aria-label="Buscar estações de monitoramento"
         />
         {searchQuery && (
           <button
             type="button"
             className="clear-search-btn"
             onClick={() => onSearchChange('')}
-            aria-label="Limpar busca"
+            aria-label="Limpar campo de busca"
           >
             ×
           </button>
@@ -94,196 +87,335 @@ function FilterToolbar({
         </span>
         <button
           type="button"
-          className="refresh-btn"
+          className={`refresh-btn ${isLoading ? 'loading' : ''}`}
           onClick={onRefresh}
           disabled={isLoading}
-          title="Atualizar dados da Defesa Civil RS"
+          title="Atualizar dados telemétricos"
         >
-          {isLoading ? 'Carregando...' : '↻ Atualizar'}
+          <span className="refresh-icon" aria-hidden="true">↻</span>
+          <span>{isLoading ? 'Atualizando...' : 'Atualizar'}</span>
         </button>
       </div>
-    </div>
+    </nav>
   )
 }
 
 function SensorBadges({ station, compact = false }) {
   const s = station.sensors || {}
-  const hasRiver = station.hasLevel || s.hasRiver || station.level != null
-  const hasRain = station.hasRainfall || s.hasRain || station.rainfall24h > 0
+  const hasRiver = Boolean(station.hasLevel || s.hasRiver || station.level != null || (station.currentLevel != null && station.currentLevel > 0))
+  const hasRain = Boolean(station.hasRainfall || s.hasRain || station.rainfall24h > 0)
   const hasWind = Boolean(s.hasWind || station.wind?.speed != null)
-  const hasTemp = Boolean(station.temperature?.current != null)
+  const hasTemp = Boolean(s.hasTemperature || station.temperature?.current != null)
   const hasPressure = Boolean(s.hasPressure || station.pressure?.current != null)
   const hasHumidity = Boolean(s.hasHumidity || station.humidity != null)
 
   return (
-    <div className={`sensor-badges-row ${compact ? 'compact' : ''}`}>
-      {hasRiver && <span className="sensor-badge river" title="Sensor de nível do rio">Rio</span>}
-      {hasRain && <span className="sensor-badge rain" title="Sensor pluviômetro">Chuva</span>}
-      {hasTemp && <span className="sensor-badge temp" title="Termômetro">Temp</span>}
-      {hasWind && <span className="sensor-badge wind" title="Anemômetro (Vento)">Vento</span>}
-      {hasPressure && <span className="sensor-badge pressure" title="Barômetro">Pressão</span>}
-      {hasHumidity && <span className="sensor-badge humidity" title="Higrômetro">Umidade</span>}
+    <div className={`sensor-badges-row ${compact ? 'compact' : ''}`} aria-label="Sensores disponíveis">
+      {hasRiver && <span className="sensor-badge river" title="Sensor telemétrico de nível de rio">Rio</span>}
+      {hasRain && <span className="sensor-badge rain" title="Pluviômetro telemétrico">Chuva</span>}
+      {hasTemp && <span className="sensor-badge temp" title="Termômetro de superfície">Temp</span>}
+      {hasWind && <span className="sensor-badge wind" title="Anemômetro (velocidade e direção)">Vento</span>}
+      {hasPressure && <span className="sensor-badge pressure" title="Sensor barométrico local">Pressão</span>}
+      {hasHumidity && <span className="sensor-badge humidity" title="Higrômetro de umidade relativa">Umidade</span>}
     </div>
   )
 }
 
-function PanelView({ stations, onDetails }) {
+function CardSkeleton() {
   return (
-    <section className="module">
+    <div className="river-card skeleton-card" aria-hidden="true">
+      <div className="card-header">
+        <div className="card-header-top">
+          <span className="skeleton-pill w-30" />
+          <span className="skeleton-pill w-20" />
+        </div>
+        <div className="skeleton-pill w-50 h-title" />
+        <div className="skeleton-pill w-70" />
+      </div>
+      <div className="reading-copy">
+        <div className="skeleton-pill w-40 h-metric" />
+        <div className="skeleton-pill w-60" />
+      </div>
+      <div className="river-footer">
+        <div className="skeleton-pill w-35" />
+        <div className="skeleton-pill w-25 h-btn" />
+      </div>
+    </div>
+  )
+}
+
+function LiveTimestamp({ dateTime, className = 'measured-time' }) {
+  const [, setTick] = useState(0)
+
+  useEffect(() => {
+    // Atualização pontual do texto relativo a cada 5s apenas neste nó folha
+    const timer = setInterval(() => setTick((t) => t + 1), 5000)
+    return () => clearInterval(timer)
+  }, [])
+
+  return (
+    <time className={className} dateTime={dateTime}>
+      {formatRelativeTime(dateTime)}
+    </time>
+  )
+}
+
+function PanelView({
+  stations,
+  allStations = stations,
+  onDetails,
+  isLoading,
+  selectedStation,
+  onSelectStation,
+}) {
+  return (
+    <section className="module" aria-labelledby="heading-panel">
+      {!isLoading && (allStations.length > 0 || stations.length > 0) && (
+        <FeaturedOverview
+          stations={allStations.length > 0 ? allStations : stations}
+          selectedStation={selectedStation}
+          onSelectStation={onSelectStation}
+          onDetails={onDetails}
+        />
+      )}
+
+      <div className="module-intro">
+        <div>
+          <h2 id="heading-panel" className="module-title">Todas as Estações</h2>
+          <p className="module-desc">Monitoramento hidrológico e meteorológico das estações telemétricas ativas no Rio Grande do Sul.</p>
+        </div>
+      </div>
+
       <div className="river-grid">
-        {stations.map((station) => {
+        {isLoading && stations.length === 0 ? (
+          Array.from({ length: 6 }).map((_, i) => <CardSkeleton key={`skeleton-${i}`} />)
+        ) : (
+          stations.map((station) => {
           const temp = station.temperature?.current
           const wind = station.wind?.speed
+          const hasRiver = Boolean(station.hasLevel || station.sensors?.hasRiver || station.level != null || (station.currentLevel != null && station.currentLevel > 0))
+          const isJustUpdated = Boolean(station._lastUpdated && Date.now() - station._lastUpdated < 1800)
+
           return (
-            <article className="river-card" key={station.id}>
-              <div className="river-title">
-                <div>
-                  <span className="eyebrow">{station.basin}</span>
-                  <h3>{station.city}</h3>
+            <article className={`river-card ${isJustUpdated ? 'card-just-updated' : ''}`} key={station.id}>
+              <div className="card-header">
+                <div className="card-header-top">
+                  <span className="basin-tag">{station.basin}</span>
+                  <span className="station-code-pill">{station.id}</span>
                 </div>
-                <span className="station-code-pill">{station.id}</span>
+                <h2 className="station-city">{station.city}</h2>
+                <p className="station-name">{station.name}</p>
+                <SensorBadges station={station} compact />
               </div>
-              <p className="station-name">{station.name}</p>
-              <SensorBadges station={station} compact />
 
               <div className="reading-copy">
-                <strong>{formatNumber(station.currentLevel, 'm')}</strong>
-                <p>Nível do rio</p>
-                <p>Chuva em 24h: <strong>{formatNumber(station.rainfall24h, 'mm')}</strong></p>
+                {hasRiver ? (
+                  <>
+                    <div className="primary-metric">
+                      <strong className="metric-value">{formatNumber(station.currentLevel, 'm')}</strong>
+                      <span className="metric-label">
+                        {station.river ? `Nível do ${station.river}` : 'Nível do rio'}
+                        {station.trend != null && (
+                          <span className={`trend-indicator ${station.trend > 0.05 ? 'up' : station.trend < -0.05 ? 'down' : 'stable'}`}>
+                            {station.trend > 0.05 ? ' ↑ Subindo' : station.trend < -0.05 ? ' ↓ Descendo' : ' → Estável'}
+                          </span>
+                        )}
+                      </span>
+                    </div>
+                    <div className="secondary-metric">
+                      <span>Chuva em 24h:</span>
+                      <strong>{formatNumber(station.rainfall24h, 'mm')}</strong>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="primary-metric">
+                      <strong className="metric-value">{formatNumber(station.rainfall24h, 'mm')}</strong>
+                      <span className="metric-label">Chuva acumulada em 24h</span>
+                    </div>
+                    {temp != null && (
+                      <div className="secondary-metric">
+                        <span>Temperatura:</span>
+                        <strong>{formatTemperature(temp)}</strong>
+                      </div>
+                    )}
+                  </>
+                )}
+
                 {(temp != null || wind != null) && (
-                  <p className="extra-telemetry">
+                  <div className="extra-telemetry">
                     {temp != null && <span>🌡 {formatTemperature(temp)}</span>}
-                    {temp != null && wind != null && <span> · </span>}
+                    {temp != null && wind != null && <span className="telemetry-sep">·</span>}
                     {wind != null && <span>💨 {formatNumber(wind, 'km/h')}</span>}
-                  </p>
+                  </div>
                 )}
               </div>
 
               <div className="river-footer">
-                <small>Medição: {formatDate(station.measuredAt)}</small>
-                <button type="button" onClick={() => onDetails(station)}>Ver detalhes</button>
+                <LiveTimestamp dateTime={station.measuredAt} />
+                <button
+                  type="button"
+                  className="details-btn"
+                  onClick={() => onDetails(station)}
+                  aria-label={`Ver detalhes da estação ${station.name}`}
+                >
+                  Ver detalhes
+                </button>
               </div>
             </article>
           )
-        })}
+        })
+        )}
       </div>
-      {stations.length === 0 && (
+
+      {!isLoading && stations.length === 0 && (
         <div className="empty-results">
-          <p>Nenhuma estação encontrada para os filtros selecionados.</p>
+          <p>Nenhuma estação encontrada para os critérios informados.</p>
+          <small>Tente alterar o termo de busca ou limpar o filtro de sensores.</small>
         </div>
       )}
     </section>
   )
 }
 
-function MapView({ stations, onDetails }) {
-  const [selected, setSelected] = useState(stations[0] || null)
-
-  useEffect(() => {
-    if (stations.length > 0 && (!selected || !stations.some((s) => s.id === selected.id))) {
-      setSelected(stations[0])
-    }
-  }, [stations, selected])
-
+function MapView({ stations, onDetails, selectedStation, onSelectStation }) {
   return (
-    <section className="module">
-      <div className="map-layout">
-        <div className="mock-map" role="img" aria-label="Mapa do Rio Grande do Sul com estações">
-          <svg className="rs-map" viewBox="-57.5941 27.0931 7.891 6.6508" aria-hidden="true">
-            <g transform="scale(1,-1)">
-              <path d="M-53.9475-31.9546l.2219-.1438.0491-.1397.0325-.1468.2071-.1633.2605-.1103.179.0673.0294.1007.1656.0435.0782.077-.0969.0359.1022.1799.096.0086-.0655-.1739.0861-.1411-.0186-.1773-.1025-.196-.1088-.0811-.1694.1175-.1223.0037-.0505-.2097-.0858-.1039-.0651.0422-.1439-.1902.0444-.1822-.083-.0935-.015-.1582.1008-.0545.052-.0001.5933.4608.1528.1789.1287.237.0723.2384.1299.2905.1958.1766-.0176.2197-.1418.0922.033.0609.0712.0896.1164.0035.0225.0986.0033.0963.0907.1901.1078.0251.1926.0167-.0096.116.0909.038.0958.0276-.0573.1116.0505.1036.0761-.0003-.0082.229.0621-.0026.0534.1663.1296.043-.0743.1355-.1182.0748.0271.1723.0293.0152.0392-.1437.1698-.0769.0073-.1324.1256-.0438.0152.1094.2587.0404.0353.0876.0782-.0539-.0401-.2378-.1468.122.0431-.1327-.0037-.2061-.0637-.112-.213-.0772.0122-.1071-.2244-.131.0215-.1505-.08-.1727-.1236-.0746-.0671.04-.2305-.2749-.179-.0341-.0651-.0695-.1953.0346.0829-.0865-.062-.2208.2463.224.4037.2236.2412.1912.3439.3144.0749.0799.4329.6093.0824.1959.0278.0686.0538.1392.0511.1209.0439.0917.0116.0245.0461.0875.0839.1474.0115.0179.1187.1636.0906.118-.0789.04-.1098.0703-.056.0158-.1567-.0581.0803-.092-.007-.0055-.1036.0849.0068.0765.1215.0109.0587.1146.0019.1193.0048.0554.0162.1678.0945.0126.0576.1033.0785-.0202.001.0011-.0238.11-.0894.0499-.1545.0288-.0979-.039-.3561.0459-.1891.0397-.0817.1237-.0535.0214-.1262.2072-.1031.0931-.0231-.015-.0552.0764.0033.0179-.2199.1334-.0355.016-.1485.112-.0903.0484-.0308-.0179-.0542.0884-.0686.0088-.0868-.035-.0491-.0074-.0211.0471-.1252.1-.0656.0288-.0581.0029-.1177.0128-.0365.0737-.0385-.0622-.098.0266-.0214.0101-.0133.0646-.1038-.0423-.0083.0195-.1469-.0438-.094.0784-.0155.0026-.0503.0331-.1199-.0475-.0213.0778-.0253.0469-.0589-.0147-.111-.0845-.1348-.0176.0263.0775-.0592.0211-.1328-.0825-.0596.0174-.0519-.013-.118.0069-.102.0068-.0174.0073-.1095.0171-.1084-.1127-.0565-.0385-.0751.0376-.0308-.1201-.0665-.0628-.1275.0425-.0632-.0759-.1148.023-.0426-.0875-.0913-.0178-.0938.0279-.0858-.1633-.0964-.0916-.0524-.0619-.151-.0055-.0751-.075-.062-.0331-.0357-.068-.0629-.0523-.3328-.1552.102-.0993-.023-.0756-.1584.061-.0334-.1238-.1392-.0436.0208-.0555-.1918-.1969-.1055-.0329-.0236-.1166-.1071-.1548-.1584-.0403-.0757-.1752-.1155-.125-.1911-.2234-.1608-.1268-.1035-.0106-.0943-.1068.0016-.0843-.1365-.1384-.1295-.0687.0261-.0732.1786-.0503.1852.0174.089.1714.2648.0248.1923-.1124.112-.1593.0839-.0239.0841-.117.0882-.0308.1022-.0724.0376-.1008.1265-.0802.0125-.2959.1403.01.2046.1176.0876.1211.1416-.1718.0856-.0329.1046-.2146.1723-.0799.0387.0482.1993-.158.1352.0062.1144-.0208.114-.1139.0183-.0824.3666-.2784.1405-.0234Z" />
-            </g>
-          </svg>
-          <span className="map-label label-poa">Porto Alegre</span>
-          {stations.map((station) => {
-            const point = projectCoordinates(station.latitude, station.longitude)
-              ?? mockMapPoints.find((item) => item.city === station.city)
-              ?? { x: 50, y: 50 }
-            return (
-              <button
-                type="button"
-                className={`map-marker ${selected?.id === station.id ? 'selected' : ''}`}
-                style={{ left: `${point.x}%`, top: `${point.y}%` }}
-                key={station.id}
-                onClick={() => setSelected(station)}
-                aria-label={`Selecionar ${station.name}`}
-                title={`${station.name} (${station.city})`}
-              />
-            )
-          })}
+    <section className="module map-module" aria-labelledby="heading-map">
+      <div className="module-intro">
+        <div>
+          <h1 id="heading-map" className="module-title">Mapa de Estações</h1>
+          <p className="module-desc">
+            Visualização cartográfica georreferenciada da Rede Hidrometeorológica Oficial da Defesa Civil RS.
+          </p>
         </div>
-        <aside className="side-panel selected-station">
-          <span className="eyebrow">Estação selecionada</span>
-          <h2>{selected?.city || 'Selecione uma estação'}</h2>
-          <p>{selected?.name}</p>
-          <SensorBadges station={selected || {}} compact />
-          <strong>{selected && formatNumber(selected.currentLevel, 'm')}</strong>
-          <p>Nível atual do rio</p>
-          <p style={{ marginTop: '12px' }}>Chuva em 24h: {selected ? formatNumber(selected.rainfall24h, 'mm') : '—'}</p>
-          {selected?.temperature?.current != null && (
-            <p>Temperatura: <strong>{formatTemperature(selected.temperature.current)}</strong></p>
-          )}
-          {selected?.wind?.speed != null && (
-            <p>Vento: <strong>{formatNumber(selected.wind.speed, 'km/h')}</strong></p>
-          )}
-          {selected && (
-            <button type="button" onClick={() => onDetails(selected)} style={{ marginTop: '16px' }}>
-              Abrir detalhes
-            </button>
-          )}
-        </aside>
       </div>
+
+      <InteractiveMap
+        stations={stations}
+        onDetails={onDetails}
+        selectedStation={selectedStation}
+        onSelectStation={onSelectStation}
+      />
     </section>
   )
 }
 
-function DetailsView({ station }) {
+function DetailsView({ station, onBack, isLive = false }) {
+  const prevValuesRef = useRef({})
+  const [activeFlashes, setActiveFlashes] = useState({})
+
+  useEffect(() => {
+    if (!station) return
+    const prev = prevValuesRef.current
+    const flashes = {}
+
+    if (prev.id === station.id) {
+      if (prev.currentLevel != null && Math.abs(prev.currentLevel - station.currentLevel) > 0.001) flashes.level = true
+      if (prev.rainfall24h != null && Math.abs(prev.rainfall24h - station.rainfall24h) > 0.001) flashes.rain = true
+      if (prev.tempCurrent != null && Math.abs(prev.tempCurrent - (station.temperature?.current ?? 0)) > 0.05) flashes.temp = true
+      if (prev.windSpeed != null && Math.abs(prev.windSpeed - (station.wind?.speed ?? 0)) > 0.1) flashes.wind = true
+      if (prev.pressure != null && Math.abs(prev.pressure - (station.pressure?.current ?? 0)) > 0.05) flashes.pressure = true
+      if (prev.humidity != null && Math.abs(prev.humidity - (station.humidity ?? 0)) > 0.1) flashes.humidity = true
+    }
+
+    prevValuesRef.current = {
+      id: station.id,
+      currentLevel: station.currentLevel,
+      rainfall24h: station.rainfall24h,
+      tempCurrent: station.temperature?.current,
+      windSpeed: station.wind?.speed,
+      pressure: station.pressure?.current,
+      humidity: station.humidity,
+    }
+
+    if (Object.keys(flashes).length > 0) {
+      setActiveFlashes(flashes)
+      const timeout = setTimeout(() => setActiveFlashes({}), 1400)
+      return () => clearTimeout(timeout)
+    }
+  }, [station])
+
+  if (!station) {
+    return (
+      <section className="module" aria-labelledby="heading-details-empty">
+        <div className="empty-details-card">
+          <h2 id="heading-details-empty">Nenhuma estação selecionada</h2>
+          <p>Escolha uma estação no painel de medições ou no mapa para visualizar a ficha técnica e a telemetria completa.</p>
+          <button type="button" className="primary-action-btn" onClick={onBack}>
+            Ver medições atuais
+          </button>
+        </div>
+      </section>
+    )
+  }
+
   const r = station.rainfall || {}
   const t = station.temperature || {}
   const w = station.wind || {}
   const p = station.pressure || {}
 
   return (
-    <section className="module">
-      <article className="side-panel details-page full-width">
-        <div className="details-header">
-          <div>
-            <span className="eyebrow">Rede Hidrometeorológica Oficial · Defesa Civil RS</span>
-            <h2>{station.name}</h2>
-            <p className="subtitle">
-              {station.city} · {station.basin} · {station.region} · Código: <strong>{station.id}</strong>
+    <section className="module" aria-labelledby="heading-details">
+      <article className="details-container">
+        <div className="details-top-nav">
+          <button
+            type="button"
+            className="back-nav-btn"
+            onClick={onBack}
+            aria-label="Voltar para a lista de medições atuais"
+          >
+            ← Voltar para as medições
+          </button>
+        </div>
+
+        <header className="details-header">
+          <div className="details-header-main">
+            <div className="details-tags">
+              <span className="basin-tag">{station.basin}</span>
+              <span className="region-tag">{station.region}</span>
+            </div>
+            <h1 id="heading-details" className="details-title">{station.name}</h1>
+            <p className="details-subtitle">
+              Município de <strong>{station.city}</strong> · Código oficial da estação: <code>{station.id}</code>
             </p>
           </div>
-          <div className="details-meta-pill">
-            <span>Última medição:</span>
-            <strong>{formatDate(station.measuredAt)}</strong>
+          <div className={`details-meta-pill ${station.isLive || isLive ? 'live' : ''}`}>
+            <div className="meta-live-row">
+              <span className="meta-live-dot" aria-hidden="true" />
+              <span className="meta-label">
+                {station.isLive || isLive ? 'Transmissão Contínua (Tempo Real)' : 'Última transmissão telemétrica'}
+              </span>
+            </div>
+            <LiveTimestamp dateTime={station.measuredAt} className="meta-value" />
           </div>
-        </div>
+        </header>
 
-        <div className="section-block">
-          <h3>Sensores e Recursos Ativos</h3>
+        <section className="section-block" aria-labelledby="heading-sensors-active">
+          <h2 id="heading-sensors-active" className="section-title">Sensores e Recursos Ativos</h2>
           <SensorBadges station={station} />
-        </div>
+        </section>
 
-        <div className="section-block">
-          <h3>Telemetria Hidrometeorológica</h3>
+        <section className="section-block" aria-labelledby="heading-telemetry">
+          <h2 id="heading-telemetry" className="section-title">Telemetria Hidrometeorológica em Tempo Real</h2>
           <div className="telemetry-grid">
-            <div className="metric-card highlight">
+            <div className={`metric-card highlight ${activeFlashes.level ? 'value-updated' : ''}`}>
               <span className="metric-label">Nível do Rio</span>
               <div className="metric-value">{formatNumber(station.currentLevel, 'm')}</div>
               <small className="metric-hint">
-                {station.river ? `Rio: ${station.river}` : 'Rio não identificado'}
-                {station.trend != null && ` · Tendência: ${station.trend > 0 ? 'Subindo' : station.trend < 0 ? 'Descendo' : 'Estável'}`}
+                {station.river ? `Rio: ${station.river}` : 'Leito não identificado'}
+                {station.trend != null && (
+                  <span> · Tendência: {station.trend > 0.05 ? 'Subindo' : station.trend < -0.05 ? 'Descendo' : 'Estável'}</span>
+                )}
               </small>
             </div>
 
-            <div className="metric-card">
+            <div className={`metric-card ${activeFlashes.rain ? 'value-updated' : ''}`}>
               <span className="metric-label">Chuva em 24h</span>
               <div className="metric-value">{formatNumber(station.rainfall24h, 'mm')}</div>
               <small className="metric-hint">1h: {formatNumber(r.h1, 'mm')} · 6h: {formatNumber(r.h6, 'mm')}</small>
             </div>
 
-            <div className="metric-card">
+            <div className={`metric-card ${activeFlashes.temp ? 'value-updated' : ''}`}>
               <span className="metric-label">Temperatura Atual</span>
               <div className="metric-value">{formatTemperature(t.current)}</div>
               <small className="metric-hint">
@@ -297,22 +429,22 @@ function DetailsView({ station }) {
               <small className="metric-hint">Índice bioclimático calculado</small>
             </div>
 
-            <div className="metric-card">
-              <span className="metric-label">Vento</span>
+            <div className={`metric-card ${activeFlashes.wind ? 'value-updated' : ''}`}>
+              <span className="metric-label">Vento em Superfície</span>
               <div className="metric-value">{formatWind(w.speed, w.gust, w.direction)}</div>
               <small className="metric-hint">
                 {w.direction != null ? `Azimute: ${w.direction}° (${degreesToCompass(w.direction)})` : 'Direção não disp.'}
-                {w.gust != null && ` · Rajada máx: ${formatNumber(w.gust, 'km/h')}`}
+                {w.gust != null && ` · Rajada: ${formatNumber(w.gust, 'km/h')}`}
               </small>
             </div>
 
-            <div className="metric-card">
+            <div className={`metric-card ${activeFlashes.pressure ? 'value-updated' : ''}`}>
               <span className="metric-label">Pressão Atmosférica</span>
               <div className="metric-value">{formatPressure(p.current, p.trend)}</div>
-              <small className="metric-hint">Sensor barométrico local</small>
+              <small className="metric-hint">Barômetro calibrado</small>
             </div>
 
-            <div className="metric-card">
+            <div className={`metric-card ${activeFlashes.humidity ? 'value-updated' : ''}`}>
               <span className="metric-label">Umidade Relativa</span>
               <div className="metric-value">{formatHumidity(station.humidity)}</div>
               <small className="metric-hint">Higrômetro de superfície</small>
@@ -321,26 +453,26 @@ function DetailsView({ station }) {
             <div className="metric-card">
               <span className="metric-label">Radiação Solar</span>
               <div className="metric-value">{formatSolarRadiation(station.solarRadiation)}</div>
-              <small className="metric-hint">Piranômetro solar</small>
+              <small className="metric-hint">Piranômetro de superfície</small>
             </div>
           </div>
-        </div>
+        </section>
 
-        <div className="section-block">
-          <h3>Histórico de Precipitações Acumuladas por Janela Temporal</h3>
+        <section className="section-block" aria-labelledby="heading-rainfall-history">
+          <h2 id="heading-rainfall-history" className="section-title">Histórico de Precipitação Acumulada por Janela Temporal</h2>
           <div className="table-wrapper">
             <table className="rainfall-table">
               <thead>
                 <tr>
-                  <th>Janela Temporal</th>
-                  <th>Chuva Acumulada</th>
-                  <th>Janela Temporal</th>
-                  <th>Chuva Acumulada</th>
+                  <th scope="col">Janela Temporal</th>
+                  <th scope="col">Volume Acumulado</th>
+                  <th scope="col">Janela Temporal</th>
+                  <th scope="col">Volume Acumulado</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td>10 segundos (s015)</td>
+                  <td>Instantâneo (15 segundos)</td>
                   <td>{formatNumber(r.s015, 'mm')}</td>
                   <td>12 horas</td>
                   <td>{formatNumber(r.h12, 'mm')}</td>
@@ -372,27 +504,34 @@ function DetailsView({ station }) {
                 <tr>
                   <td>6 horas</td>
                   <td>{formatNumber(r.h6, 'mm')}</td>
-                  <td>Mês Atual / Anterior</td>
+                  <td>Mês Atual / Mês Anterior</td>
                   <td>{formatNumber(r.currentMonth, 'mm')} / {formatNumber(r.previousMonth, 'mm')}</td>
                 </tr>
               </tbody>
             </table>
           </div>
-        </div>
+        </section>
 
-        <div className="section-block">
-          <h3>Cadastro Técnico da Estação</h3>
-          <dl className="details">
-            <div><dt>Município</dt><dd>{station.city || '—'}</dd></div>
-            <div><dt>Código Oficial</dt><dd>{station.id}</dd></div>
-            <div><dt>Bacia Hidrográfica</dt><dd>{station.basin || '—'}</dd></div>
-            <div><dt>Região Geográfica</dt><dd>{station.region || '—'}</dd></div>
-            <div><dt>Coordenadas</dt><dd>{station.latitude?.toFixed(4)}, {station.longitude?.toFixed(4)}</dd></div>
-            <div><dt>Altitude</dt><dd>{station.altitude != null ? `${station.altitude} m` : 'Não informada'}</dd></div>
-            <div><dt>Área de Drenagem</dt><dd>{station.drainageArea != null ? `${station.drainageArea} km²` : '—'}</dd></div>
-            <div><dt>Vazão do Rio</dt><dd>{station.riverFlow != null ? `${station.riverFlow} m³/s` : '—'}</dd></div>
+        <section className="section-block" aria-labelledby="heading-technical-data">
+          <h2 id="heading-technical-data" className="section-title">Cadastro Técnico da Estação</h2>
+          <dl className="details-grid">
+            <div className="detail-item"><dt>Município</dt><dd>{station.city || '—'}</dd></div>
+            <div className="detail-item"><dt>Código Oficial</dt><dd>{station.id}</dd></div>
+            <div className="detail-item"><dt>Bacia Hidrográfica</dt><dd>{station.basin || '—'}</dd></div>
+            <div className="detail-item"><dt>Região Geográfica</dt><dd>{station.region || '—'}</dd></div>
+            <div className="detail-item">
+              <dt>Coordenadas Geográficas</dt>
+              <dd>
+                {Number.isFinite(station.latitude) && Number.isFinite(station.longitude)
+                  ? `${station.latitude.toFixed(4)}°, ${station.longitude.toFixed(4)}°`
+                  : 'Coordenadas não informadas'}
+              </dd>
+            </div>
+            <div className="detail-item"><dt>Altitude</dt><dd>{station.altitude != null ? `${station.altitude} m` : 'Não informada'}</dd></div>
+            <div className="detail-item"><dt>Área de Drenagem</dt><dd>{station.drainageArea != null && station.drainageArea > 0 ? `${station.drainageArea} km²` : '—'}</dd></div>
+            <div className="detail-item"><dt>Vazão do Rio</dt><dd>{station.riverFlow != null && station.riverFlow > 0 ? `${station.riverFlow} m³/s` : '—'}</dd></div>
           </dl>
-        </div>
+        </section>
       </article>
     </section>
   )
@@ -409,11 +548,15 @@ export default function App() {
   const [sensorFilter, setSensorFilter] = useState('all')
   const [isLoading, setIsLoading] = useState(false)
 
-  const loadData = () => {
+  const loadData = useCallback(() => {
     setIsLoading(true)
     hydrologyRepository.listStations().then((items) => {
       setStations(items)
-      setSelected(items[0] || null)
+      setSelected((prev) => {
+        if (!prev) return items[0] || null
+        const match = items.find((s) => s.id === prev.id)
+        return match || items[0] || null
+      })
       setDataSource(items.source || 'API Oficial Defesa Civil RS')
       setIsLive(Boolean(items.isLive))
     }).catch((err) => {
@@ -423,32 +566,71 @@ export default function App() {
     }).finally(() => {
       setIsLoading(false)
     })
-  }
+  }, [])
 
   useEffect(() => {
     loadData()
 
-    // Conexão WebSocket em tempo real nativa (graphql-transport-ws)
+    // Buffer de atualizações para evitar renderizações a cada milissegundo e travamentos
+    const pendingBatch = new Map()
+    let batchTimer = null
+
+    const flushBatch = () => {
+      if (pendingBatch.size === 0) return
+
+      const updates = Array.from(pendingBatch.values())
+      pendingBatch.clear()
+
+      setStations((prev) => {
+        const hasMock = prev.some((s) => s.isMock || s.id.startsWith('ANA-'))
+        const hasRealUpdates = updates.some((u) => !u.isMock)
+
+        if (hasMock && hasRealUpdates) {
+          const map = new Map()
+          updates.forEach((u) => map.set(u.id, { ...u, _lastUpdated: Date.now() }))
+          return Array.from(map.values())
+        }
+
+        const map = new Map(prev.map((s) => [s.id, s]))
+        updates.forEach((u) => {
+          const existing = map.get(u.id)
+          map.set(u.id, existing ? { ...existing, ...u, _lastUpdated: Date.now() } : { ...u, _lastUpdated: Date.now() })
+        })
+        return Array.from(map.values())
+      })
+
+      setSelected((cur) => {
+        if (!cur || cur.isMock || cur.id?.startsWith('ANA-')) {
+          const firstReal = updates.find((u) => !u.isMock)
+          if (firstReal) return { ...firstReal, _lastUpdated: Date.now() }
+          return cur
+        }
+        const updated = updates.find((u) => u.id === cur.id)
+        if (updated) {
+          return { ...cur, ...updated, _lastUpdated: Date.now() }
+        }
+        return cur
+      })
+
+      setIsLive(true)
+    }
+
+    batchTimer = setInterval(flushBatch, 1500)
+
     const unsubscribe = hydrologyRepository.subscribeLiveUpdates(
       (updatedStation) => {
-        setStations((prev) => {
-          const index = prev.findIndex((s) => s.id === updatedStation.id)
-          if (index >= 0) {
-            const next = [...prev]
-            next[index] = { ...prev[index], ...updatedStation }
-            return next
-          }
-          return [...prev, updatedStation]
-        })
-        setSelected((cur) => (cur?.id === updatedStation.id ? { ...cur, ...updatedStation } : cur))
+        pendingBatch.set(updatedStation.id, updatedStation)
       },
       (status) => {
         setWsStatus(status)
       },
     )
 
-    return () => unsubscribe?.()
-  }, [])
+    return () => {
+      if (batchTimer) clearInterval(batchTimer)
+      unsubscribe?.()
+    }
+  }, [loadData])
 
   const filteredStations = useMemo(() => {
     return filterStations(stations, {
@@ -460,38 +642,52 @@ export default function App() {
   const openDetails = (station) => {
     setSelected(station)
     setView('details')
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  const liveBadgeLabel = useMemo(() => {
-    if (wsStatus === 'connected') return 'Tempo Real (WebSocket Ativo)'
-    if (wsStatus === 'connecting') return 'Conectando WebSocket...'
-    if (isLive) return 'API Oficial Defesa Civil RS'
-    return dataSource
+  const liveBadgeInfo = useMemo(() => {
+    if (wsStatus === 'connected') {
+      return { label: 'Tempo Real (WebSocket)', mode: 'live-ws' }
+    }
+    if (wsStatus === 'connecting') {
+      return { label: 'Conectando WebSocket...', mode: 'connecting' }
+    }
+    if (isLive) {
+      return { label: 'API Oficial Defesa Civil RS', mode: 'live' }
+    }
+    return { label: dataSource, mode: 'mock' }
   }, [wsStatus, isLive, dataSource])
 
   return (
     <div className="app-shell">
       <header className="topbar">
-        <a className="brand" href="#" onClick={() => setView('panel')}>
-          Alerta<span>RS</span>
-        </a>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <span className={`source-badge ${wsStatus === 'connected' ? 'live-ws' : isLive ? 'live' : 'mock'}`}>
-            <span className="pulse-dot" />
-            {liveBadgeLabel}
+        <div className="brand-group">
+          <button
+            type="button"
+            className="brand-btn"
+            onClick={() => setView('panel')}
+            aria-label="Ir para a tela inicial"
+          >
+            Alerta<span className="brand-accent">RS</span>
+          </button>
+          <span className={`source-badge ${liveBadgeInfo.mode}`}>
+            <span className="pulse-dot" aria-hidden="true" />
+            <span>{liveBadgeInfo.label}</span>
           </span>
-          <nav aria-label="Navegação principal">
-            {views.map((item) => (
-              <button
-                className={view === item.id ? 'active' : ''}
-                key={item.id}
-                onClick={() => setView(item.id)}
-              >
-                {item.label}
-              </button>
-            ))}
-          </nav>
         </div>
+
+        <nav className="nav-tabs" aria-label="Navegação do aplicativo">
+          {views.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              className={`nav-tab ${view === item.id ? 'active' : ''}`}
+              onClick={() => setView(item.id)}
+            >
+              {item.label}
+            </button>
+          ))}
+        </nav>
       </header>
 
       <main>
@@ -508,20 +704,44 @@ export default function App() {
           />
         )}
 
-        {view === 'panel' && <PanelView stations={filteredStations} onDetails={openDetails} />}
-        {view === 'map' && <MapView stations={filteredStations} onDetails={openDetails} />}
-        {view === 'details' && selected && <DetailsView station={selected} />}
+        {view === 'panel' && (
+          <PanelView
+            stations={filteredStations}
+            allStations={stations}
+            onDetails={openDetails}
+            isLoading={isLoading}
+            selectedStation={selected}
+            onSelectStation={setSelected}
+          />
+        )}
+        {view === 'map' && (
+          <MapView
+            stations={filteredStations}
+            onDetails={openDetails}
+            selectedStation={selected}
+            onSelectStation={setSelected}
+          />
+        )}
+        {view === 'details' && (
+          <DetailsView
+            station={selected}
+            onBack={() => setView('panel')}
+            isLive={isLive || wsStatus === 'connected'}
+          />
+        )}
       </main>
 
-      <footer>
-        AlertaRS · Monitoramento hidrológico do Rio Grande do Sul · Fonte:{' '}
-        <a
-          href="https://sistemas.defesacivil.rs.gov.br/api-redehidrometeorologica"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Rede Hidrometeorológica da Defesa Civil RS
-        </a>
+      <footer className="app-footer">
+        <p>
+          AlertaRS · Monitoramento hidrológico e meteorológico do Rio Grande do Sul · Fonte:{' '}
+          <a
+            href="https://sistemas.defesacivil.rs.gov.br/api-redehidrometeorologica"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Rede Hidrometeorológica da Defesa Civil RS
+          </a>
+        </p>
       </footer>
     </div>
   )
