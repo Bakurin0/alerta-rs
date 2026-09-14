@@ -233,3 +233,43 @@ test('formata timestamps relativos em tempo real com precisão', () => {
   assert.ok(formatRelativeTime(fiveMinAgo).includes('Há 5 min'))
   assert.equal(formatRelativeTime(null), 'Data não disponível')
 })
+
+test('trata estação em implantação (ex: Antônio Prado com sentinela 21474836) como sem valor e status de implantação', () => {
+  const antonioPradoRaw = {
+    codigo: 'DCRS-00087',
+    name: {
+      general: 'Antônio Prado/Flores da Cunha',
+      local: '',
+    },
+    position: {
+      latitude: -28.939899,
+      longitude: -51.188499,
+      bacia: 'RS - Rio Taquari-Antas',
+      regiao: 'Nordeste Rio-grandense',
+    },
+    data: {
+      rio: {
+        rio_nome: { value: null },
+        rio_nivel: { value: 21474836 },
+        rio_nivel_tendencia: { value: null },
+      },
+    },
+    filter: {
+      relacao: {
+        tem_nivel_do_rio: true,
+      },
+    },
+  }
+
+  const dcNormalized = normalizeDefesaCivil(antonioPradoRaw)
+  assert.equal(dcNormalized.isDeploying, true)
+  assert.equal(dcNormalized.level, null)
+  assert.equal(dcNormalized.currentLevel, null)
+  assert.equal(dcNormalized.trend, null)
+  assert.equal(dcNormalized.hasLevel, true)
+
+  const domainNormalized = normalizeStation(dcNormalized)
+  assert.equal(domainNormalized.isDeploying, true)
+  assert.equal(domainNormalized.currentLevel, null)
+  assert.equal(domainNormalized.hasLevel, true)
+})

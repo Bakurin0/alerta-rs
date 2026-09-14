@@ -101,15 +101,25 @@ export function formatRelativeTime(dateString) {
 }
 
 export function normalizeStation(station) {
-  const currentLevel = station.currentLevel ?? station.level ?? 0
+  const isDeploying = Boolean(station.isDeploying || (station.level != null && Math.abs(station.level) >= 20000000))
+  const level = isDeploying ? null : (station.level ?? null)
+  const currentLevel = isDeploying ? null : (station.currentLevel ?? level)
   const rainfall24h = station.rainfall24h ?? station.rainfall?.h24 ?? 0
   const thresholds = station.thresholds ?? null
   const status = classifyLevel(currentLevel, thresholds)
-  const hasLevel = Boolean(station.hasLevel || station.sensors?.hasRiver || station.level != null || (station.currentLevel != null && station.currentLevel > 0))
+  const hasLevel = Boolean(
+    station.hasLevel ||
+    station.sensors?.hasRiver ||
+    isDeploying ||
+    level != null ||
+    (currentLevel != null && currentLevel > 0)
+  )
   const hasRainfall = Boolean(station.hasRainfall || station.sensors?.hasRain || rainfall24h > 0)
 
   return {
     ...station,
+    isDeploying,
+    level,
     currentLevel,
     rainfall24h,
     thresholds,

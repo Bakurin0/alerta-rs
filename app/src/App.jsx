@@ -193,7 +193,13 @@ function PanelView({
           stations.map((station) => {
           const temp = station.temperature?.current
           const wind = station.wind?.speed
-          const hasRiver = Boolean(station.hasLevel || station.sensors?.hasRiver || station.level != null || (station.currentLevel != null && station.currentLevel > 0))
+          const hasRiver = Boolean(
+            station.hasLevel ||
+            station.sensors?.hasRiver ||
+            station.isDeploying ||
+            station.level != null ||
+            (station.currentLevel != null && station.currentLevel > 0)
+          )
           const isJustUpdated = Boolean(station._lastUpdated && Date.now() - station._lastUpdated < 1800)
 
           return (
@@ -212,13 +218,21 @@ function PanelView({
                 {hasRiver ? (
                   <>
                     <div className="primary-metric">
-                      <strong className="metric-value">{formatNumber(station.currentLevel, 'mm')}</strong>
+                      <strong className="metric-value">
+                        {station.isDeploying || station.currentLevel == null
+                          ? '-'
+                          : formatNumber(station.currentLevel, 'mm')}
+                      </strong>
                       <span className="metric-label">
                         {station.river ? `Nível do ${station.river}` : 'Nível do rio'}
-                        {station.trend != null && (
-                          <span className={`trend-indicator ${station.trend > 0.05 ? 'up' : station.trend < -0.05 ? 'down' : 'stable'}`}>
-                            {station.trend > 0.05 ? ' ↑ Subindo' : station.trend < -0.05 ? ' ↓ Descendo' : ' → Estável'}
-                          </span>
+                        {station.isDeploying ? (
+                          <span className="trend-indicator deploying">Histórico em implantação</span>
+                        ) : (
+                          station.trend != null && (
+                            <span className={`trend-indicator ${station.trend > 0.05 ? 'up' : station.trend < -0.05 ? 'down' : 'stable'}`}>
+                              {station.trend > 0.05 ? ' ↑ Subindo' : station.trend < -0.05 ? ' ↓ Descendo' : ' → Estável'}
+                            </span>
+                          )
                         )}
                       </span>
                     </div>
@@ -400,11 +414,21 @@ function DetailsView({ station, onBack, isLive = false }) {
           <div className="telemetry-grid">
             <div className={`metric-card highlight ${activeFlashes.level ? 'value-updated' : ''}`}>
               <span className="metric-label">Nível do Rio</span>
-              <div className="metric-value">{formatNumber(station.currentLevel, 'mm')}</div>
+              <div className="metric-value">
+                {station.isDeploying || station.currentLevel == null
+                  ? '-'
+                  : formatNumber(station.currentLevel, 'mm')}
+              </div>
               <small className="metric-hint">
-                {station.river ? `Rio: ${station.river}` : 'Leito não identificado'}
-                {station.trend != null && (
-                  <span> · Tendência: {station.trend > 0.05 ? 'Subindo' : station.trend < -0.05 ? 'Descendo' : 'Estável'}</span>
+                {station.isDeploying ? (
+                  'Histórico em implantação'
+                ) : (
+                  <>
+                    {station.river ? `Rio: ${station.river}` : 'Leito não identificado'}
+                    {station.trend != null && (
+                      <span> · Tendência: {station.trend > 0.05 ? 'Subindo' : station.trend < -0.05 ? 'Descendo' : 'Estável'}</span>
+                    )}
+                  </>
                 )}
               </small>
             </div>

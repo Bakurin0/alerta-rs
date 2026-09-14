@@ -93,7 +93,7 @@ export default function FeaturedOverview({
     const novaPrata = stations.find((s) => s.city?.toLowerCase() === 'nova prata')
     if (novaPrata) return novaPrata
     // Preferência 2: primeira estação com nível de rio e meteorologia
-    const withRiver = stations.find((s) => s.currentLevel != null && s.currentLevel > 0)
+    const withRiver = stations.find((s) => !s.isDeploying && s.currentLevel != null && s.currentLevel > 0)
     if (withRiver) return withRiver
     // Fallback
     return stations[0] || null
@@ -136,11 +136,16 @@ export default function FeaturedOverview({
   const timeOfDayLabel = isNight ? 'Noite' : 'Dia'
 
   // Métricas do Card 2 (Estação de monitoramento / Régua)
-  const currentLevelVal = activeStation.currentLevel ?? activeStation.level ?? 0.38
-  const formattedLevel = `${Number(currentLevelVal).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}mm`
+  const isDeploying = Boolean(activeStation.isDeploying || (activeStation.level != null && Math.abs(activeStation.level) >= 20000000))
+  const currentLevelVal = isDeploying ? null : (activeStation.currentLevel ?? activeStation.level ?? 0.38)
+  const formattedLevel = isDeploying || currentLevelVal == null
+    ? '-'
+    : `${Number(currentLevelVal).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}mm`
 
-  const trendSummary = getTrendSummary(activeStation.trend)
-  const trendArrow = activeStation.trend > 0.01 ? '↗' : activeStation.trend < -0.01 ? '↘' : '→'
+  const trendSummary = isDeploying
+    ? 'Histórico em implantação'
+    : getTrendSummary(activeStation.trend)
+  const trendArrow = isDeploying ? '—' : (activeStation.trend > 0.01 ? '↗' : activeStation.trend < -0.01 ? '↘' : '→')
 
   // Determina a zona ativa e a altura proporcional do nível d'água na régua
   // Categorias padrão inspiradas na referência:

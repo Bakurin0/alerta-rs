@@ -206,11 +206,14 @@ export default function InteractiveMap({ stations, onDetails, selectedStation, o
       const hasRiver = Boolean(
         station.hasLevel ||
           station.sensors?.hasRiver ||
+          station.isDeploying ||
           station.level != null ||
           (station.currentLevel != null && station.currentLevel > 0),
       )
       const metric = hasRiver
-        ? `Nível: ${formatNumber(station.currentLevel, 'mm')}`
+        ? (station.isDeploying || station.currentLevel == null
+            ? 'Nível: - (Histórico em implantação)'
+            : `Nível: ${formatNumber(station.currentLevel, 'mm')}`)
         : `Chuva 24h: ${formatNumber(station.rainfall24h, 'mm')}`
 
       const marker = L.circleMarker([station.latitude, station.longitude], {
@@ -372,11 +375,19 @@ export default function InteractiveMap({ stations, onDetails, selectedStation, o
                   <span className="metric-label">
                     {selectedStation.river ? `Nível do ${selectedStation.river}` : 'Nível Atual do Rio'}
                   </span>
-                  <strong className="metric-value">{formatNumber(selectedStation.currentLevel, 'mm')}</strong>
-                  {selectedStation.trend != null && (
-                    <span className={`trend-indicator ${selectedStation.trend > 0.05 ? 'up' : selectedStation.trend < -0.05 ? 'down' : 'stable'}`}>
-                      {selectedStation.trend > 0.05 ? '↑ Nível subindo' : selectedStation.trend < -0.05 ? '↓ Nível descendo' : '→ Nível estável'}
-                    </span>
+                  <strong className="metric-value">
+                    {selectedStation.isDeploying || selectedStation.currentLevel == null
+                      ? '-'
+                      : formatNumber(selectedStation.currentLevel, 'mm')}
+                  </strong>
+                  {selectedStation.isDeploying ? (
+                    <span className="trend-indicator deploying">Histórico em implantação</span>
+                  ) : (
+                    selectedStation.trend != null && (
+                      <span className={`trend-indicator ${selectedStation.trend > 0.05 ? 'up' : selectedStation.trend < -0.05 ? 'down' : 'stable'}`}>
+                        {selectedStation.trend > 0.05 ? '↑ Nível subindo' : selectedStation.trend < -0.05 ? '↓ Nível descendo' : '→ Nível estável'}
+                      </span>
+                    )
                   )}
                 </div>
               ) : (

@@ -602,6 +602,13 @@ main {
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--border-subtle);
 }
+.trend-indicator.deploying {
+  color: #cbd5e1;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px dashed var(--border-subtle);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
 
 .secondary-metric {
   display: flex;

@@ -156,7 +156,9 @@ const valueOf = (field) => {
 
 export function normalizeStation(item) {
   const name = item.name?.general?.trim() || item.name?.local?.trim() || item.codigo || 'Estação sem nome'
-  const level = valueOf(item.data?.rio?.rio_nivel)
+  const rawRiverLevel = valueOf(item.data?.rio?.rio_nivel)
+  const isRiverDeploying = rawRiverLevel != null && Math.abs(rawRiverLevel) >= 20000000
+  const level = isRiverDeploying ? null : rawRiverLevel
   const rainfall24h = valueOf(item.data?.chuva?.acumulado?.h024)
 
   const tempCurrent = valueOf(item.data?.temperatura?.atual)
@@ -176,7 +178,7 @@ export function normalizeStation(item) {
   const drainageArea = valueOf(item.data?.rio?.rio_area_drenagem)
   const riverFlow = valueOf(item.data?.rio?.rio_vazao)
 
-  const hasLevel = Boolean(item.filter?.relacao?.tem_nivel_do_rio || level != null)
+  const hasLevel = Boolean(item.filter?.relacao?.tem_nivel_do_rio || level != null || isRiverDeploying)
   const hasRainfall = Boolean(item.filter?.relacao?.tem_chuva_acumulada || (rainfall24h != null && rainfall24h > 0))
   const hasWind = Boolean(item.filter?.relacao?.tem_vento || windSpeed != null)
   const hasHumidity = Boolean(item.filter?.relacao?.tem_umidade || humidity != null)
@@ -193,9 +195,10 @@ export function normalizeStation(item) {
     latitude: Number(item.position?.latitude),
     longitude: Number(item.position?.longitude),
     measuredAt: item.timestamp,
+    isDeploying: isRiverDeploying,
     level,
-    currentLevel: level ?? 0,
-    trend: valueOf(item.data?.rio?.rio_nivel_tendencia),
+    currentLevel: level,
+    trend: isRiverDeploying ? null : valueOf(item.data?.rio?.rio_nivel_tendencia),
     river: item.data?.rio?.rio_nome?.value || null,
     drainageArea,
     riverFlow,
