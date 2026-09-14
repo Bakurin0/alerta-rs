@@ -137,7 +137,7 @@ export default function FeaturedOverview({
 
   // Métricas do Card 2 (Estação de monitoramento / Régua)
   const currentLevelVal = activeStation.currentLevel ?? activeStation.level ?? 0.38
-  const formattedLevel = `${Number(currentLevelVal).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}m`
+  const formattedLevel = `${Number(currentLevelVal).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}mm`
 
   const trendSummary = getTrendSummary(activeStation.trend)
   const trendArrow = activeStation.trend > 0.01 ? '↗' : activeStation.trend < -0.01 ? '↘' : '→'

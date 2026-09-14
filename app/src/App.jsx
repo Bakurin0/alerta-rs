@@ -212,7 +212,7 @@ function PanelView({
                 {hasRiver ? (
                   <>
                     <div className="primary-metric">
-                      <strong className="metric-value">{formatNumber(station.currentLevel, 'm')}</strong>
+                      <strong className="metric-value">{formatNumber(station.currentLevel, 'mm')}</strong>
                       <span className="metric-label">
                         {station.river ? `Nível do ${station.river}` : 'Nível do rio'}
                         {station.trend != null && (
@@ -400,7 +400,7 @@ function DetailsView({ station, onBack, isLive = false }) {
           <div className="telemetry-grid">
             <div className={`metric-card highlight ${activeFlashes.level ? 'value-updated' : ''}`}>
               <span className="metric-label">Nível do Rio</span>
-              <div className="metric-value">{formatNumber(station.currentLevel, 'm')}</div>
+              <div className="metric-value">{formatNumber(station.currentLevel, 'mm')}</div>
               <small className="metric-hint">
                 {station.river ? `Rio: ${station.river}` : 'Leito não identificado'}
                 {station.trend != null && (

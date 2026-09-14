@@ -210,7 +210,7 @@ export default function InteractiveMap({ stations, onDetails, selectedStation, o
           (station.currentLevel != null && station.currentLevel > 0),
       )
       const metric = hasRiver
-        ? `Nível: ${formatNumber(station.currentLevel, 'm')}`
+        ? `Nível: ${formatNumber(station.currentLevel, 'mm')}`
         : `Chuva 24h: ${formatNumber(station.rainfall24h, 'mm')}`
 
       const marker = L.circleMarker([station.latitude, station.longitude], {
@@ -372,7 +372,7 @@ export default function InteractiveMap({ stations, onDetails, selectedStation, o
                   <span className="metric-label">
                     {selectedStation.river ? `Nível do ${selectedStation.river}` : 'Nível Atual do Rio'}
                   </span>
-                  <strong className="metric-value">{formatNumber(selectedStation.currentLevel, 'm')}</strong>
+                  <strong className="metric-value">{formatNumber(selectedStation.currentLevel, 'mm')}</strong>
                   {selectedStation.trend != null && (
                     <span className={`trend-indicator ${selectedStation.trend > 0.05 ? 'up' : selectedStation.trend < -0.05 ? 'down' : 'stable'}`}>
                       {selectedStation.trend > 0.05 ? '↑ Nível subindo' : selectedStation.trend < -0.05 ? '↓ Nível descendo' : '→ Nível estável'}
